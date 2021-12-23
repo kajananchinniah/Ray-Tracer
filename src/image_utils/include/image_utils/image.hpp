@@ -2,7 +2,11 @@
 #define RAYTRACER_IMAGE_UTILS_IMAGE_HPP_
 
 #include "common/common_types.hpp"
+#include <memory>
 #include <vector>
+
+#include "cuda.h"
+#include "cuda_runtime.h"
 
 namespace RayTracer
 {
@@ -11,7 +15,7 @@ namespace RayTracer
 /// The helper functions in image_utils.hpp should be used to access the data.
 struct Image {
     /// A data buffer holding the pixels of an image
-    std::vector<u8> data_buffer{};
+    std::unique_ptr<u8 *, decltype(&cudaFree)> data_buffer{nullptr, cudaFree};
 
     /// The height of the image
     u64 height{};
