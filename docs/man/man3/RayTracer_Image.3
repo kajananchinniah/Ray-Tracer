@@ -1,0 +1,45 @@
+.TH "RayTracer::Image" 3 "Thu Dec 23 2021" "ray_tracer" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+RayTracer::Image
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <image\&.hpp>\fP
+.SS "Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "std::vector< u8 > \fBdata_buffer\fP {}"
+.br
+.RI "A data buffer holding the pixels of an image\&. "
+.ti -1c
+.RI "u64 \fBheight\fP {}"
+.br
+.RI "The height of the image\&. "
+.ti -1c
+.RI "u64 \fBwidth\fP {}"
+.br
+.RI "The width of the image\&. "
+.ti -1c
+.RI "u64 \fBchannels\fP {}"
+.br
+.RI "The number of channels of the image\&. "
+.ti -1c
+.RI "u64 \fBpitch\fP {}"
+.br
+.RI "The pitch of the image\&. "
+.ti -1c
+.RI "ImageEncodings \fBencoding\fP {}"
+.br
+.RI "The encoding of the image\&. "
+.in -1c
+.SH "Detailed Description"
+.PP 
+Holds relevant properties to work with images\&. The helper functions in \fBimage_utils\&.hpp\fP should be used to access the data\&. 
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for ray_tracer from the source code\&.

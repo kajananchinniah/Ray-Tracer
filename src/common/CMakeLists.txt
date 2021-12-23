@@ -1,0 +1,3 @@
+add_library(raytracer_common INTERFACE)
+target_include_directories(raytracer_common INTERFACE include)
+
