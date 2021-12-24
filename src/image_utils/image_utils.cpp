@@ -8,9 +8,6 @@
 
 #include "common/cuda_memory_utils.hpp"
 
-#include "cuda.h"
-#include "cuda_runtime.h"
-
 namespace RayTracer
 {
 
