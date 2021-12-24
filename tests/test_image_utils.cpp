@@ -50,16 +50,11 @@ static void readImageSuccessBase(const char *file_path,
     EXPECT_EQ(image.width, kTestImageWidth);
     EXPECT_EQ(image.channels, kTestImageChannels);
     EXPECT_EQ(image.encoding, test_encoding);
-    EXPECT_EQ(image.byte_size, ImageUtils::calculateByteSize(
-                                   image.width, image.height, image.channels));
-    EXPECT_EQ(image.size, ImageUtils::calculateSize(image.width, image.height,
-                                                    image.channels));
     for (u64 v = 0; v < image.height; ++v) {
         for (u64 u = 0; u < image.width; ++u) {
-            u64 flattened_idx{ImageUtils::calculateFlattenedIndex(image, u, v)};
-            ASSERT_EQ(image.data_buffer[flattened_idx + red_idx], 0x12);
-            ASSERT_EQ(image.data_buffer[flattened_idx + green_idx], 0x34);
-            ASSERT_EQ(image.data_buffer[flattened_idx + blue_idx], 0x56);
+            ASSERT_EQ(image.at(u, v, red_idx), 0x12);
+            ASSERT_EQ(image.at(u, v, green_idx), 0x34);
+            ASSERT_EQ(image.at(u, v, blue_idx), 0x56);
         }
     }
 }
