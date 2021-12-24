@@ -1,5 +1,5 @@
-#include "common/cuda_memory_utils.hpp"
 #include "common/check_cuda_errors.hpp"
+#include "common/cuda_memory_utils.hpp"
 
 namespace RayTracer
 {
@@ -30,6 +30,11 @@ void transferCudaMemory(void *dst, const void *src, u64 byte_size,
                         cudaMemcpyKind kind)
 {
     CHECK_CUDA_ERRORS(cudaMemcpy(dst, src, byte_size, kind));
+}
+
+void deallocateCudaMemory(void *ptr)
+{
+    CHECK_CUDA_ERRORS(ptr);
 }
 } // namespace lowlevel
 

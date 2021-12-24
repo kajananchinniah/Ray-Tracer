@@ -61,6 +61,8 @@ void transferCudaMemory(T *dst, const T *src, u64 size,
                                  sizeof(T) * size, kind);
 }
 
+void deallocateCudaMemory(void *ptr);
+
 } // namespace cuda
 
 } // namespace RayTracer
