@@ -34,7 +34,7 @@ void transferCudaMemory(void *dst, const void *src, u64 byte_size,
 
 void deallocateCudaMemory(void *ptr)
 {
-    CHECK_CUDA_ERRORS(ptr);
+    CHECK_CUDA_ERRORS(cudaFree(ptr));
 }
 } // namespace lowlevel
 
