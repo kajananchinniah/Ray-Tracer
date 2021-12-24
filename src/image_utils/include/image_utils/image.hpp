@@ -15,7 +15,14 @@ namespace RayTracer
 /// The helper functions in image_utils.hpp should be used to access the data.
 struct Image {
     /// A data buffer holding the pixels of an image
-    std::unique_ptr<u8 *, decltype(&cudaFree)> data_buffer{nullptr, cudaFree};
+    std::unique_ptr<u8[], decltype(&cudaFree)> data_buffer{nullptr, cudaFree};
+    // u8 *data_buffer;
+
+    /// The size of the image in the type of the image
+    u64 size{};
+
+    /// The size of the image in bytes
+    u64 byte_size{};
 
     /// The height of the image
     u64 height{};

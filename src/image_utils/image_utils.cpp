@@ -6,6 +6,11 @@
 #include <iostream>
 #include <optional>
 
+#include "common/cuda_memory_utils.hpp"
+
+#include "cuda.h"
+#include "cuda_runtime.h"
+
 namespace RayTracer
 {
 
@@ -19,14 +24,13 @@ bool ImageUtils::saveImage(const char *filename, const Image &image)
 
     cv::Mat output_image(image.height, image.width, CV_8UC3);
 
-    if (image.data_buffer.size() !=
-        output_image.total() * output_image.elemSize()) {
+    if (image.size != output_image.total() * output_image.elemSize()) {
         std::cout << "Warning: image is not the correct size. Not saving\n";
         return false;
     }
 
-    std::memcpy(output_image.data, image.data_buffer.data(),
-                image.data_buffer.size());
+    cuda::transferCudaMemory(output_image.data, image.data_buffer.get(),
+                             image.size);
 
     return cv::imwrite(filename, output_image);
 }
@@ -49,9 +53,11 @@ std::optional<Image> ImageUtils::readImage(const char *filename,
     image.channels = 3;
     image.pitch = ImageUtils::calculatePitch(image.width, image.channels);
     image.encoding = requested_encoding;
-    image.data_buffer.resize(cv_image.total() * cv_image.elemSize());
-    std::memcpy(image.data_buffer.data(), cv_image.data,
-                image.data_buffer.size());
+    image.size = cv_image.total() * cv_image.elemSize();
+    image.byte_size = cv_image.total() * cv_image.elemSize();
+    image.data_buffer = cuda::createCudaUniquePtrArray<u8>(image.size);
+    cuda::transferCudaMemory(image.data_buffer.get(), cv_image.data,
+                             image.size);
     return image;
 }
 

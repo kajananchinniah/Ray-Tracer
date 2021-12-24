@@ -1,3 +1,2 @@
-add_library(raytracer_common INTERFACE)
-target_include_directories(raytracer_common INTERFACE include)
-
+add_library(raytracer_common cuda_memory_utils.cu)
+target_include_directories(raytracer_common PUBLIC include)
