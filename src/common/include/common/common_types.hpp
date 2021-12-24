@@ -1,3 +1,5 @@
+/// @file common_types.hpp
+/// @brief Contains definitions for common types
 #ifndef RAYTRACER_COMMON_COMMON_TYPES_HPP_
 #define RAYTRACER_COMMON_COMMON_TYPES_HPP_
 

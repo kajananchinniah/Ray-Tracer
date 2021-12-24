@@ -1,3 +1,5 @@
+/// @file
+/// @brief Defines helper functions to check cuda errors
 #include "cuda.h"
 #include "cuda_runtime.h"
 
@@ -9,6 +11,9 @@ namespace RayTracer
 namespace cuda
 {
 
+/// @def CHECK_CUDA_ERRORS(result)
+/// @brief A macro that checks if result is cudaSuccess.
+///        If it's not, it will terminate the program.
 #define CHECK_CUDA_ERRORS(result) \
     { \
         checkCudaErrors(result, __FILE__, __LINE__); \

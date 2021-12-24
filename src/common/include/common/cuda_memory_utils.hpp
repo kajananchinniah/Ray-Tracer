@@ -1,3 +1,5 @@
+/// @file cuda_memory_utils.hpp
+/// @brief Contains useful functions to handle cuda memory
 #ifndef RAY_TRACER_COMMON_CUDA_MEMORY_UTILS_HPP_
 #define RAY_TRACER_COMMON_CUDA_MEMORY_UTILS_HPP_
 

@@ -1,3 +1,5 @@
+///@file image.hpp
+/// @brief Contains the definition of an image struct
 #ifndef RAYTRACER_IMAGE_UTILS_IMAGE_HPP_
 #define RAYTRACER_IMAGE_UTILS_IMAGE_HPP_
 
@@ -75,6 +77,12 @@ struct Image {
         return v * pitch() + u * colourStep() + c;
     }
 
+    /// @brief Gets the element at (u, v, c) in the image
+    ///
+    /// @param u The u coordinate (e.g. along the width) of interest
+    /// @param v The v coordinate (e.g. along the height) of interest
+    /// @param c The c coordinate (e.g. along the channel) of interest
+    /// @return The data element
     __device__ __host__ u8 &at(s64 u, s64 v, s64 c)
     {
         return data_buffer[flattenedIndex(u, v, c)];
