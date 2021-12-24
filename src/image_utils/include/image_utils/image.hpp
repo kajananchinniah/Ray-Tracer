@@ -13,6 +13,8 @@
 #include "common/cuda_memory_utils.hpp"
 #include <iostream>
 
+#include "vector3/vector3.hpp"
+
 namespace RayTracer
 {
 
@@ -22,11 +24,24 @@ struct Image {
     Image()
     {
     }
-    Image(s64 w, s64 h, ImageEncodings e)
+    Image(s64 w, s64 h, ImageEncodings e = ImageEncodings::kBGR8)
         : width{w}, height{h}, channels{3}, encoding{e},
           data_buffer{cuda::createCudaUniquePtrArray<u8>(size())}
     {
     }
+
+    /// @brief Makes a shallow copy of an image
+    ///
+    /// @warning This should not be used (other than for writing CUDA kernels)
+    /// Since it violates strict ownership
+    Image(const Image &other)
+        : width{other.width}, height{other.height}, channels{other.channels},
+          encoding{other.encoding}, raw_data_buffer{other.raw_data_buffer}
+    {
+    }
+
+    Image operator=(const Image &other) = delete;
+
     /// The width of the image
     s64 width{};
 
@@ -41,6 +56,9 @@ struct Image {
 
     /// A data buffer holding the pixels of an image
     std::unique_ptr<u8[], decltype(&cudaFree)> data_buffer{nullptr, cudaFree};
+
+    /// Raw pointer to the data buffer
+    u8 *raw_data_buffer{data_buffer.get()};
 
     /// @brief Calculates the size of the image's data buffer
     ///
@@ -85,7 +103,7 @@ struct Image {
     /// @return The data element
     __device__ __host__ u8 &at(s64 u, s64 v, s64 c)
     {
-        return data_buffer[flattenedIndex(u, v, c)];
+        return raw_data_buffer[flattenedIndex(u, v, c)];
     }
 
     /// @brief Gets the element at (u, v, c) in the image
@@ -96,7 +114,29 @@ struct Image {
     /// @return The data element
     __device__ __host__ const u8 &at(s64 u, s64 v, s64 c) const
     {
-        return data_buffer[flattenedIndex(u, v, c)];
+        return raw_data_buffer[flattenedIndex(u, v, c)];
+    }
+
+    __device__ __host__ void writeColorAt(Color color, s64 u, s64 v)
+    {
+        s64 red_idx, green_idx, blue_idx;
+        switch (encoding) {
+        case ImageEncodings::kRGB8:
+            red_idx = 0;
+            green_idx = 1;
+            blue_idx = 2;
+            break;
+        case ImageEncodings::kBGR8:
+            blue_idx = 0;
+            green_idx = 1;
+            red_idx = 2;
+            break;
+        default:
+            return;
+        }
+        at(u, v, red_idx) = static_cast<u8>(255.999 * color.x());
+        at(u, v, green_idx) = static_cast<u8>(255.999 * color.y());
+        at(u, v, blue_idx) = static_cast<u8>(255.999 * color.z());
     }
 };
 

@@ -32,6 +32,7 @@ bool saveImage(const char *filename, const Image &image)
         return false;
     }
 
+    cuda::prefetchToCpu(image.data_buffer.get(), image.size());
     cuda::copyCudaMemory(output_image.data, image.data_buffer.get(),
                          image.size());
 
