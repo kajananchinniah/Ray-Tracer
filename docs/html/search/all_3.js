@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['height_0',['height',['../structRayTracer_1_1Image.html#aa46101a3430e870f0409563813cb80b6',1,'RayTracer::Image']]]
+  ['encoding_0',['encoding',['../structRayTracer_1_1Image.html#a5ec4a68663720092615c1f2eedcdc748',1,'RayTracer::Image']]]
 ];

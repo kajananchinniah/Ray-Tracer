@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['encoding_0',['encoding',['../structRayTracer_1_1Image.html#a5ec4a68663720092615c1f2eedcdc748',1,'RayTracer::Image']]]
+  ['data_5fbuffer_0',['data_buffer',['../structRayTracer_1_1Image.html#a9271f0a7399bc9dbcb88eb9420282b21',1,'RayTracer::Image']]],
+  ['deallocatecudamemory_1',['deallocateCudaMemory',['../cuda__memory__utils_8hpp.html#a9f36520d5be3034a7ea317f5ebf9d1cd',1,'RayTracer::cuda']]]
 ];

@@ -1,0 +1,76 @@
+.TH "/home/kajanan/Github/ray_tracer/src/image_utils/include/image_utils/image_utils.hpp" 3 "Fri Dec 24 2021" "ray_tracer" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/home/kajanan/Github/ray_tracer/src/image_utils/include/image_utils/image_utils.hpp \- Contains utility functions to use with images\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+\fC#include 'image\&.hpp'\fP
+.br
+\fC#include <optional>\fP
+.br
+\fC#include 'cuda\&.h'\fP
+.br
+\fC#include 'cuda_runtime\&.h'\fP
+.br
+
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "bool \fBRayTracer::ImageUtils::saveImage\fP (const char *filename, const Image &image)"
+.br
+.RI "Saves an image to disk\&. "
+.ti -1c
+.RI "std::optional< Image > \fBRayTracer::ImageUtils::readImage\fP (const char *filepath, ImageEncodings requested_encoding=ImageEncodings::kBGR8)"
+.br
+.RI "Reads an image to disk\&. "
+.in -1c
+.SH "Detailed Description"
+.PP 
+Contains utility functions to use with images\&. 
+
+
+.SH "Function Documentation"
+.PP 
+.SS "std::optional< Image > RayTracer::ImageUtils::readImage (const char * filepath, \fBImageEncodings\fP requested_encoding = \fC\fBImageEncodings::kBGR8\fP\fP)"
+
+.PP
+Reads an image to disk\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIfilepath\fP The filepath to the image that should be read 
+.br
+\fIrequested_encoding\fP The desired encoding of the image 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+Returns the image if successful, or std::nullopt otherwise 
+.RE
+.PP
+
+.SS "bool RayTracer::ImageUtils::saveImage (const char * filename, const \fBImage\fP & image)"
+
+.PP
+Saves an image to disk\&. 
+.PP
+\fBParameters\fP
+.RS 4
+\fIfilename\fP The filename to save the image to 
+.br
+\fIimage\fP The image to save 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+Whether the save was successful or not 
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for ray_tracer from the source code\&.

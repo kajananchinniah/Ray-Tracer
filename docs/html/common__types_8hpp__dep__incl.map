@@ -1,0 +1,7 @@
+<map id="/home/kajanan/Github/ray_tracer/src/common/include/common/common_types.hpp" name="/home/kajanan/Github/ray_tracer/src/common/include/common/common_types.hpp">
+<area shape="rect" id="node1" title="Contains definitions for common types." alt="" coords="163,5,337,76"/>
+<area shape="rect" id="node2" href="$cuda__memory__utils_8hpp.html" title="Contains useful functions to handle cuda memory." alt="" coords="5,124,212,195"/>
+<area shape="rect" id="node3" href="$image_8hpp.html" title="Contains the definition of an image struct." alt="" coords="95,243,263,313"/>
+<area shape="rect" id="node5" href="$vector3_8hpp_source.html" title=" " alt="" coords="287,131,474,187"/>
+<area shape="rect" id="node4" href="$image__utils_8hpp.html" title="Contains utility functions to use with images." alt="" coords="95,361,263,432"/>
+</map>

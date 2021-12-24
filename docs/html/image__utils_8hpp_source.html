@@ -69,43 +69,33 @@ $(function() {
   <div class="headertitle"><div class="title">image_utils.hpp</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef RAYTRACER_IMAGE_UTILS_IMAGE_UTILS_HPP_</span></div>
-<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define RAYTRACER_IMAGE_UTILS_IMAGE_UTILS_HPP_</span></div>
-<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
-<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;image.hpp&quot;</span></div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;optional&gt;</span></div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span>RayTracer</div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>{</div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="classRayTracer_1_1ImageUtils.html">   12</a></span><span class="keyword">class </span><a class="code hl_class" href="classRayTracer_1_1ImageUtils.html">ImageUtils</a></div>
+<a href="image__utils_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#ifndef RAYTRACER_IMAGE_UTILS_IMAGE_UTILS_HPP_</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#define RAYTRACER_IMAGE_UTILS_IMAGE_UTILS_HPP_</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="image_8hpp.html">image.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;optional&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;cuda.h&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;cuda_runtime.h&quot;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span>RayTracer</div>
 <div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>{</div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classRayTracer_1_1ImageUtils.html#aa51f560e199d6ad3561b980d9e587a5c">saveImage</a>(<span class="keyword">const</span> <span class="keywordtype">char</span> *filename, <span class="keyword">const</span> <a class="code hl_struct" href="structRayTracer_1_1Image.html">Image</a> &amp;image);</div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keyword">static</span> std::optional&lt;Image&gt;</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <a class="code hl_function" href="classRayTracer_1_1ImageUtils.html#a9d5258bae670a609b078c7099267b97c">readImage</a>(<span class="keyword">const</span> <span class="keywordtype">char</span> *filepath,</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>              ImageEncodings requested_encoding = ImageEncodings::kBGR8);</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keyword">static</span> u64 <a class="code hl_function" href="classRayTracer_1_1ImageUtils.html#a9bc65a1e0026f3691848a4045ab9d858">calculatePitch</a>(u64 width, u64 channels);</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keyword">static</span> u64 <a class="code hl_function" href="classRayTracer_1_1ImageUtils.html#a28db47abec6bc0ce5e6b3a9a2a1a9b01">calculateFlattenedIndex</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structRayTracer_1_1Image.html">Image</a> &amp;image, u64 u, u64 v);</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keyword">static</span> u64 <a class="code hl_function" href="classRayTracer_1_1ImageUtils.html#a9bc65a1e0026f3691848a4045ab9d858">calculatePitch</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structRayTracer_1_1Image.html">Image</a> &amp;image);</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keyword">static</span> u64 <a class="code hl_function" href="classRayTracer_1_1ImageUtils.html#a1c1a09416f43cb447eb8f0e2d40e303f">calculateColourStep</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structRayTracer_1_1Image.html">Image</a> &amp;image);</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>};</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>} <span class="comment">// namespace RayTracer</span></div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span><span class="preprocessor">#endif </span><span class="comment">// RAYTRACER_IMAGE_UTILS_IMAGE_UTILS_HPP_</span></div>
-<div class="ttc" id="aclassRayTracer_1_1ImageUtils_html"><div class="ttname"><a href="classRayTracer_1_1ImageUtils.html">RayTracer::ImageUtils</a></div><div class="ttdef"><b>Definition:</b> image_utils.hpp:13</div></div>
-<div class="ttc" id="aclassRayTracer_1_1ImageUtils_html_a1c1a09416f43cb447eb8f0e2d40e303f"><div class="ttname"><a href="classRayTracer_1_1ImageUtils.html#a1c1a09416f43cb447eb8f0e2d40e303f">RayTracer::ImageUtils::calculateColourStep</a></div><div class="ttdeci">static u64 calculateColourStep(const Image &amp;image)</div><div class="ttdoc">Calculates the colour step of an image.</div><div class="ttdef"><b>Definition:</b> image_utils.cpp:68</div></div>
-<div class="ttc" id="aclassRayTracer_1_1ImageUtils_html_a28db47abec6bc0ce5e6b3a9a2a1a9b01"><div class="ttname"><a href="classRayTracer_1_1ImageUtils.html#a28db47abec6bc0ce5e6b3a9a2a1a9b01">RayTracer::ImageUtils::calculateFlattenedIndex</a></div><div class="ttdeci">static u64 calculateFlattenedIndex(const Image &amp;image, u64 u, u64 v)</div><div class="ttdoc">Calculates the flattened index of an image.</div><div class="ttdef"><b>Definition:</b> image_utils.cpp:73</div></div>
-<div class="ttc" id="aclassRayTracer_1_1ImageUtils_html_a9bc65a1e0026f3691848a4045ab9d858"><div class="ttname"><a href="classRayTracer_1_1ImageUtils.html#a9bc65a1e0026f3691848a4045ab9d858">RayTracer::ImageUtils::calculatePitch</a></div><div class="ttdeci">static u64 calculatePitch(u64 width, u64 channels)</div><div class="ttdoc">Calculates the pitch of an image.</div><div class="ttdef"><b>Definition:</b> image_utils.cpp:58</div></div>
-<div class="ttc" id="aclassRayTracer_1_1ImageUtils_html_a9d5258bae670a609b078c7099267b97c"><div class="ttname"><a href="classRayTracer_1_1ImageUtils.html#a9d5258bae670a609b078c7099267b97c">RayTracer::ImageUtils::readImage</a></div><div class="ttdeci">static std::optional&lt; Image &gt; readImage(const char *filepath, ImageEncodings requested_encoding=ImageEncodings::kBGR8)</div><div class="ttdoc">Reads an image to disk.</div><div class="ttdef"><b>Definition:</b> image_utils.cpp:34</div></div>
-<div class="ttc" id="aclassRayTracer_1_1ImageUtils_html_aa51f560e199d6ad3561b980d9e587a5c"><div class="ttname"><a href="classRayTracer_1_1ImageUtils.html#aa51f560e199d6ad3561b980d9e587a5c">RayTracer::ImageUtils::saveImage</a></div><div class="ttdeci">static bool saveImage(const char *filename, const Image &amp;image)</div><div class="ttdoc">Saves an image to disk.</div><div class="ttdef"><b>Definition:</b> image_utils.cpp:12</div></div>
-<div class="ttc" id="astructRayTracer_1_1Image_html"><div class="ttname"><a href="structRayTracer_1_1Image.html">RayTracer::Image</a></div><div class="ttdef"><b>Definition:</b> image.hpp:12</div></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">namespace </span>ImageUtils</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>{</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keywordtype">bool</span> saveImage(<span class="keyword">const</span> <span class="keywordtype">char</span> *filename, <span class="keyword">const</span> Image &amp;image);</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>std::optional&lt;Image&gt;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>readImage(<span class="keyword">const</span> <span class="keywordtype">char</span> *filepath,</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>          ImageEncodings requested_encoding = ImageEncodings::kBGR8);</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>} <span class="comment">// namespace ImageUtils</span></div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>} <span class="comment">// namespace RayTracer</span></div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="preprocessor">#endif </span><span class="comment">// RAYTRACER_IMAGE_UTILS_IMAGE_UTILS_HPP_</span></div>
+<div class="ttc" id="aimage_8hpp_html"><div class="ttname"><a href="image_8hpp.html">image.hpp</a></div><div class="ttdoc">Contains the definition of an image struct.</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
