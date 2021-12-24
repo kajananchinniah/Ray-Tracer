@@ -8,10 +8,31 @@
 
 #include "common/cuda_memory_utils.hpp"
 
+#include "cuda.h"
+#include "cuda_runtime.h"
+
 namespace RayTracer
 {
 
-bool ImageUtils::saveImage(const char *filename, const Image &image)
+namespace ImageUtils
+{
+Image createEmptyImage(u64 height, u64 width, ImageEncodings encoding)
+{
+    Image image;
+    image.width = width;
+    image.height = height;
+    image.channels = 3;
+    image.encoding = encoding;
+    image.pitch = calculatePitch(image.width, image.channels);
+    image.size = calculateSize(image.width, image.height, image.channels);
+    image.byte_size =
+        calculateByteSize(image.width, image.height, image.channels);
+    image.pitch = calculatePitch(image.width, image.channels);
+    image.data_buffer = cuda::createCudaUniquePtrArray<u8>(image.size);
+    return image;
+}
+
+bool saveImage(const char *filename, const Image &image)
 {
     if (image.channels != 3) {
         std::cout << "Warning: received an unsupported number of channels. Not "
@@ -26,14 +47,14 @@ bool ImageUtils::saveImage(const char *filename, const Image &image)
         return false;
     }
 
-    cuda::transferCudaMemory(output_image.data, image.data_buffer.get(),
-                             image.size);
+    cuda::copyCudaMemory(output_image.data, image.data_buffer.get(),
+                         image.size);
 
     return cv::imwrite(filename, output_image);
 }
 
-std::optional<Image> ImageUtils::readImage(const char *filename,
-                                           ImageEncodings requested_encoding)
+std::optional<Image> readImage(const char *filename,
+                               ImageEncodings requested_encoding)
 {
     cv::Mat cv_image = cv::imread(filename);
     if (!cv_image.data) {
@@ -48,35 +69,45 @@ std::optional<Image> ImageUtils::readImage(const char *filename,
     image.width = cv_image.size().width;
     image.height = cv_image.size().height;
     image.channels = 3;
-    image.pitch = ImageUtils::calculatePitch(image.width, image.channels);
+    image.pitch = calculatePitch(image.width, image.channels);
     image.encoding = requested_encoding;
     image.size = cv_image.total() * cv_image.elemSize();
     image.byte_size = cv_image.total() * cv_image.elemSize();
     image.data_buffer = cuda::createCudaUniquePtrArray<u8>(image.size);
-    cuda::transferCudaMemory(image.data_buffer.get(), cv_image.data,
-                             image.size);
+    cuda::copyCudaMemory(image.data_buffer.get(), cv_image.data, image.size);
     return image;
 }
 
-u64 ImageUtils::calculatePitch(u64 width, u64 channels)
+__device__ __host__ u64 calculatePitch(u64 width, u64 channels)
 {
     return width * channels * sizeof(u8);
 }
 
-u64 ImageUtils::calculatePitch(const Image &image)
+__device__ __host__ u64 calculatePitch(const Image &image)
 {
     return image.width * image.channels * sizeof(u8);
 }
 
-u64 ImageUtils::calculateColourStep(const Image &image)
+__device__ __host__ u64 calculateColourStep(const Image &image)
 {
     return image.channels * sizeof(u8);
 }
 
-u64 ImageUtils::calculateFlattenedIndex(const Image &image, u64 u, u64 v)
+__device__ __host__ u64 calculateFlattenedIndex(const Image &image, u64 u,
+                                                u64 v)
 {
-    return v * ImageUtils::calculatePitch(image) +
-           u * ImageUtils::calculateColourStep(image);
+    return v * calculatePitch(image) + u * calculateColourStep(image);
 }
 
+__device__ __host__ u64 calculateSize(u64 width, u64 height, u64 channels)
+{
+    return width * height * channels;
+}
+
+__device__ __host__ u64 calculateByteSize(u64 width, u64 height, u64 channels)
+{
+    return calculateSize(width, height, channels) * sizeof(u8);
+}
+
+} // namespace ImageUtils
 } // namespace RayTracer
