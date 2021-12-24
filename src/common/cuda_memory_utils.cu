@@ -26,8 +26,8 @@ void prefetchToCpu(const void *ptr, u64 byte_size)
     CHECK_CUDA_ERRORS(cudaMemPrefetchAsync(ptr, byte_size, cudaCpuDeviceId));
 }
 
-void transferCudaMemory(void *dst, const void *src, u64 byte_size,
-                        cudaMemcpyKind kind)
+void copyCudaMemory(void *dst, const void *src, u64 byte_size,
+                    cudaMemcpyKind kind)
 {
     CHECK_CUDA_ERRORS(cudaMemcpy(dst, src, byte_size, kind));
 }
