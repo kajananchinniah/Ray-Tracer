@@ -9,6 +9,7 @@
 #include "cuda_runtime.h"
 
 #include "common/cuda_memory_utils.hpp"
+#include <iostream>
 
 namespace RayTracer
 {
@@ -19,19 +20,19 @@ struct Image {
     Image()
     {
     }
-    Image(u64 w, u64 h, ImageEncodings e)
+    Image(s64 w, s64 h, ImageEncodings e)
         : width{w}, height{h}, channels{3}, encoding{e},
           data_buffer{cuda::createCudaUniquePtrArray<u8>(size())}
     {
     }
     /// The width of the image
-    u64 width{};
+    s64 width{};
 
     /// The height of the image
-    u64 height{};
+    s64 height{};
 
     /// The number of channels of the image
-    u64 channels{};
+    s64 channels{};
 
     /// The encoding of the image
     ImageEncodings encoding{};
@@ -42,7 +43,7 @@ struct Image {
     /// @brief Calculates the size of the image's data buffer
     ///
     /// @return The size of the image data buffer
-    __device__ __host__ u64 size() const
+    __device__ __host__ s64 size() const
     {
         return width * height * channels * sizeof(u8);
     }
@@ -50,7 +51,7 @@ struct Image {
     /// @brief Calculates the pitch of the image
     ///
     /// @return The pitch of the image
-    __device__ __host__ u64 pitch() const
+    __device__ __host__ s64 pitch() const
     {
         return width * channels * sizeof(u8);
     }
@@ -58,7 +59,7 @@ struct Image {
     /// @brief Calculates the colour step of the image
     ///
     /// @return The colour step of the image
-    __device__ __host__ u64 colourStep() const
+    __device__ __host__ s64 colourStep() const
     {
         return channels * sizeof(u8);
     }
@@ -69,9 +70,14 @@ struct Image {
     /// @param v The v coordinate (e.g. along the height) of interest
     /// @param c The c coordinate (e.g. along the channel) of interest
     /// @return The flattened index
-    __device__ __host__ u64 flattenedIndex(u64 u, u64 v, u64 c) const
+    __device__ __host__ s64 flattenedIndex(s64 u, s64 v, s64 c) const
     {
         return v * pitch() + u * colourStep() + c;
+    }
+
+    __device__ __host__ u8 &at(s64 u, s64 v, s64 c)
+    {
+        return data_buffer[flattenedIndex(u, v, c)];
     }
 
     /// @brief Gets the element at (u, v, c) in the image
@@ -80,7 +86,7 @@ struct Image {
     /// @param v The v coordinate (e.g. along the height) of interest
     /// @param c The c coordinate (e.g. along the channel) of interest
     /// @return The data element
-    __device__ __host__ u8 at(u64 u, u64 v, u64 c) const
+    __device__ __host__ const u8 &at(s64 u, s64 v, s64 c) const
     {
         return data_buffer[flattenedIndex(u, v, c)];
     }
