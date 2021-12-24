@@ -13,6 +13,14 @@ namespace cuda
     { \
         checkCudaErrors(result, __FILE__, __LINE__); \
     }
+
+/// @brief Checks CUDA errors and terminates upon an error. The wrapper macro
+/// CHECK_CUDA_ERRORS(cudaError_t
+// result) should be used instead.
+///
+/// @param result The result of a cuda call
+/// @param filename The filename that the error occurred in
+/// @param line_number The line number that the error occurred in
 inline void checkCudaErrors(cudaError_t result, const char *filename,
                             int line_number)
 {
