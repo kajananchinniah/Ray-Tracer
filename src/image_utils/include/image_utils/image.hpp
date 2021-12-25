@@ -18,29 +18,14 @@
 namespace RayTracer
 {
 
-/// Holds relevant properties to work with images.
-/// The helper functions in image_utils.hpp should be used to access the data.
-struct Image {
-    Image()
+/// Holds image properties and relevant functions to work with images.
+/// This struct can be used in cuda kernels.
+/// Ideally, this should be passed along side an image buffer.
+struct ImageProperties {
+    ImageProperties(s64 w, s64 h, ImageEncodings e = ImageEncodings::kBGR8)
+        : width{w}, height{h}, channels{3}, encoding{e}
     {
     }
-    Image(s64 w, s64 h, ImageEncodings e = ImageEncodings::kBGR8)
-        : width{w}, height{h}, channels{3}, encoding{e},
-          data_buffer{cuda::createCudaUniquePtrArray<u8>(size())}
-    {
-    }
-
-    /// @brief Makes a shallow copy of an image
-    ///
-    /// @warning This should not be used (other than for writing CUDA kernels)
-    /// Since it violates strict ownership
-    Image(const Image &other)
-        : width{other.width}, height{other.height}, channels{other.channels},
-          encoding{other.encoding}, raw_data_buffer{other.raw_data_buffer}
-    {
-    }
-
-    Image operator=(const Image &other) = delete;
 
     /// The width of the image
     s64 width{};
@@ -53,12 +38,6 @@ struct Image {
 
     /// The encoding of the image
     ImageEncodings encoding{};
-
-    /// A data buffer holding the pixels of an image
-    std::unique_ptr<u8[], decltype(&cudaFree)> data_buffer{nullptr, cudaFree};
-
-    /// Raw pointer to the data buffer
-    u8 *raw_data_buffer{data_buffer.get()};
 
     /// @brief Calculates the size of the image's data buffer
     ///
@@ -94,6 +73,23 @@ struct Image {
     {
         return v * pitch() + u * colourStep() + c;
     }
+};
+
+/// Holds relevant properties to work with images and a pointer to an image
+// buffer. Note, when using with cuda, use access the pointers raw memory.
+/// Also, pass in the properties member as another argument.
+struct Image {
+    Image(s64 w, s64 h, ImageEncodings e = ImageEncodings::kBGR8)
+        : properties{w, h, e}, data_buffer{cuda::createCudaUniquePtrArray<u8>(
+                                   properties.size())}
+    {
+    }
+
+    /// Holds relevant image properties
+    ImageProperties properties;
+
+    /// A data buffer holding the pixels of an image
+    std::unique_ptr<u8[], decltype(&cudaFree)> data_buffer{nullptr, cudaFree};
 
     /// @brief Gets the element at (u, v, c) in the image
     ///
@@ -101,9 +97,9 @@ struct Image {
     /// @param v The v coordinate (e.g. along the height) of interest
     /// @param c The c coordinate (e.g. along the channel) of interest
     /// @return The data element
-    __device__ __host__ u8 &at(s64 u, s64 v, s64 c)
+    __host__ u8 &at(s64 u, s64 v, s64 c)
     {
-        return raw_data_buffer[flattenedIndex(u, v, c)];
+        return data_buffer[properties.flattenedIndex(u, v, c)];
     }
 
     /// @brief Gets the element at (u, v, c) in the image
@@ -112,15 +108,15 @@ struct Image {
     /// @param v The v coordinate (e.g. along the height) of interest
     /// @param c The c coordinate (e.g. along the channel) of interest
     /// @return The data element
-    __device__ __host__ const u8 &at(s64 u, s64 v, s64 c) const
+    __host__ const u8 &at(s64 u, s64 v, s64 c) const
     {
-        return raw_data_buffer[flattenedIndex(u, v, c)];
+        return data_buffer[properties.flattenedIndex(u, v, c)];
     }
 
-    __device__ __host__ void writeColorAt(Color color, s64 u, s64 v)
+    __host__ void writeColorAt(Color color, s64 u, s64 v)
     {
         s64 red_idx, green_idx, blue_idx;
-        switch (encoding) {
+        switch (properties.encoding) {
         case ImageEncodings::kRGB8:
             red_idx = 0;
             green_idx = 1;

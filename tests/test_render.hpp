@@ -1,3 +1,4 @@
+#include "common/common_types.hpp"
 #include "image_utils/image.hpp"
 #include "image_utils/image_utils.hpp"
 #include "vector3/vector3.hpp"

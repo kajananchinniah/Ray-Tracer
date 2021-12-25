@@ -48,7 +48,7 @@ void copyCudaMemory(void *dst, const void *src, u64 byte_size,
 
 } // namespace lowlevel
 
-/// @brief Allocates a cuda allocated aray and wraps it around a pointer
+/// @brief Allocates a cuda allocated array and wraps it around a unique pointer
 ///
 /// @param T the type of the array
 /// @param size The requested size to allocate

@@ -46,12 +46,12 @@ static void readImageSuccessBase(const char *file_path,
     auto maybe_image = ImageUtils::readImage(file_path, test_encoding);
     EXPECT_TRUE(maybe_image);
     auto &image = maybe_image.value();
-    EXPECT_EQ(image.height, kTestImageHeight);
-    EXPECT_EQ(image.width, kTestImageWidth);
-    EXPECT_EQ(image.channels, kTestImageChannels);
-    EXPECT_EQ(image.encoding, test_encoding);
-    for (u64 v = 0; v < image.height; ++v) {
-        for (u64 u = 0; u < image.width; ++u) {
+    EXPECT_EQ(image.properties.height, kTestImageHeight);
+    EXPECT_EQ(image.properties.width, kTestImageWidth);
+    EXPECT_EQ(image.properties.channels, kTestImageChannels);
+    EXPECT_EQ(image.properties.encoding, test_encoding);
+    for (s64 v = 0; v < image.properties.height; ++v) {
+        for (s64 u = 0; u < image.properties.width; ++u) {
             ASSERT_EQ(image.at(u, v, red_idx), 0x12);
             ASSERT_EQ(image.at(u, v, green_idx), 0x34);
             ASSERT_EQ(image.at(u, v, blue_idx), 0x56);

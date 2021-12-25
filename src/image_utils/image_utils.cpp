@@ -19,22 +19,24 @@ namespace ImageUtils
 
 bool saveImage(const char *filename, const Image &image)
 {
-    if (image.channels != 3) {
+    if (image.properties.channels != 3) {
         std::cout << "Warning: received an unsupported number of channels. Not "
                      "saving\n";
         return false;
     }
 
-    cv::Mat output_image(image.height, image.width, CV_8UC3);
+    cv::Mat output_image(image.properties.height, image.properties.width,
+                         CV_8UC3);
 
-    if (image.size() != output_image.total() * output_image.elemSize()) {
+    if (image.properties.size() !=
+        output_image.total() * output_image.elemSize()) {
         std::cout << "Warning: image is not the correct size. Not saving\n";
         return false;
     }
 
-    cuda::prefetchToCpu(image.data_buffer.get(), image.size());
+    cuda::prefetchToCpu(image.data_buffer.get(), image.properties.size());
     cuda::copyCudaMemory(output_image.data, image.data_buffer.get(),
-                         image.size());
+                         image.properties.size());
 
     return cv::imwrite(filename, output_image);
 }
@@ -53,7 +55,8 @@ std::optional<Image> readImage(const char *filename,
 
     Image image(cv_image.size().width, cv_image.size().height,
                 requested_encoding);
-    cuda::copyCudaMemory(image.data_buffer.get(), cv_image.data, image.size());
+    cuda::copyCudaMemory(image.data_buffer.get(), cv_image.data,
+                         image.properties.size());
     return image;
 }
 

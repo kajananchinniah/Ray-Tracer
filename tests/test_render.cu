@@ -3,7 +3,8 @@
 namespace
 {
 
-__global__ void test_render_cuda(RayTracer::Image image)
+__global__ void test_render_cuda(RayTracer::u8 *image_buffer,
+                                 RayTracer::ImageProperties properties)
 {
     RayTracer::u64 u_idx = blockIdx.x * blockDim.x + threadIdx.x;
     RayTracer::u64 u_stride = gridDim.x * blockDim.x;
@@ -11,11 +12,18 @@ __global__ void test_render_cuda(RayTracer::Image image)
     RayTracer::u64 v_idx = blockIdx.y * blockDim.y + threadIdx.y;
     RayTracer::u64 v_stride = gridDim.y * blockDim.y;
 
-    for (RayTracer::u64 v = v_idx; v < image.height; v += v_stride) {
-        for (RayTracer::u64 u = u_idx; u < image.width; u += u_stride) {
-            RayTracer::Color color(double(u) / (image.width - 1),
-                                   double(v) / (image.height - 1), 0.25);
-            image.writeColorAt(color, u, v);
+    for (RayTracer::u64 v = v_idx; v < properties.height; v += v_stride) {
+        for (RayTracer::u64 u = u_idx; u < properties.width; u += u_stride) {
+            RayTracer::Color color(double(u) / (properties.width - 1),
+                                   double(properties.height - v - 1) /
+                                       (properties.height - 1),
+                                   0.25);
+            image_buffer[properties.flattenedIndex(u, v, 0)] =
+                static_cast<RayTracer::u8>(255.999 * color.z());
+            image_buffer[properties.flattenedIndex(u, v, 1)] =
+                static_cast<RayTracer::u8>(255.999 * color.y());
+            image_buffer[properties.flattenedIndex(u, v, 2)] =
+                static_cast<RayTracer::u8>(255.999 * color.x());
         }
     }
 }
@@ -33,13 +41,15 @@ void test_render()
     Image image(image_width, image_height);
     dim3 blocks(1, 1, 1);
     dim3 threads(1, 1, 1);
-    test_render_cuda<<<blocks, threads>>>(image);
+    test_render_cuda<<<blocks, threads>>>(image.data_buffer.get(),
+                                          image.properties);
     auto result = cudaDeviceSynchronize();
     if (result != cudaSuccess) {
         std::cout << "Error: " << std::string(cudaGetErrorString(result))
                   << "\n";
         exit(0);
     }
+
     ImageUtils::saveImage("test_render.png", image);
 }
 } // namespace RayTracer
