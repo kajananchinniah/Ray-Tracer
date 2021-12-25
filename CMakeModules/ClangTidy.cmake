@@ -1,6 +1,6 @@
 find_program(CLANG_TIDY "clang-tidy-10")
 if(CLANG_TIDY)
-    set(CMAKE_CXX_CLANG_TIDY "clang-tidy-10")
+  set(CMAKE_CXX_CLANG_TIDY "clang-tidy-10")
 else()
-    message(WARNING "clang-tidy not found!")
+  message(WARNING "clang-tidy not found!")
 endif()
