@@ -64,6 +64,14 @@ public:
         return *this;
     }
 
+    __device__ __host__ vector3<T> &operator-=(const vector3<T> &other)
+    {
+        x_ -= other.x();
+        y_ -= other.y();
+        z_ -= other.z();
+        return *this;
+    }
+
     __device__ __host__ vector3<T> &operator*=(const T t)
     {
         x_ = x_ * t;
@@ -74,36 +82,42 @@ public:
 
     __device__ __host__ vector3<T> &operator/=(const T t)
     {
-        auto factor = 1 / t;
+        auto factor = static_cast<T>(1 / t);
         x_ = x_ * factor;
         y_ = y_ * factor;
         z_ = z_ * factor;
         return *this;
     }
 
-    __device__ __host__ f64 magnitude_squared() const
+    __device__ __host__ T magnitude_squared() const
     {
         return x_ * x_ + y_ * y_ + z_ * z_;
     }
 
-    __device__ f64 magnitude_device() const
+    __device__ T magnitude_device() const
     {
         return sqrt(magnitude_squared());
     }
 
-    __host__ f64 magnitude_host() const
+    __host__ T magnitude_host() const
     {
         return std::sqrt(magnitude_squared());
     }
 
-    __device__ f64 normalize_device()
+    __device__ void normalize_device()
     {
-        return *this /= magnitude_device();
+        f64 length = magnitude_device();
+        x_ = x_ / length;
+        y_ = y_ / length;
+        z_ = z_ / length;
     }
 
-    __host__ f64 normalize_host()
+    __host__ void normalize_host()
     {
-        return *this /= magnitude_host();
+        f64 length = magnitude_host();
+        x_ = x_ / length;
+        y_ = y_ / length;
+        z_ = z_ / length;
     }
 
 private:
@@ -130,8 +144,8 @@ template <typename T>
 __device__ __host__ inline vector3<T> operator-(const vector3<T> &left,
                                                 const vector3<T> &right)
 {
-    return vector3<T>{left.x() - right.x(), left.y() - right.y(), left.z(),
-                      right.z()};
+    return vector3<T>{left.x() - right.x(), left.y() - right.y(),
+                      left.z() - right.z()};
 }
 
 template <typename T>
@@ -157,7 +171,7 @@ __device__ __host__ inline vector3<T> operator*(const vector3<T> &vec, T t)
 template <typename T>
 __device__ __host__ inline vector3<T> operator/(const vector3<T> &vec, T t)
 {
-    return (1.0 / t) * vec;
+    return static_cast<T>(1.0 / t) * vec;
 }
 
 template <typename T>
@@ -168,22 +182,23 @@ __device__ __host__ inline T dot(const vector3<T> &left,
 }
 
 template <typename T>
-__device__ __host__ inline T cross(const vector3<T> &left,
-                                   const vector3<T> &right)
+__device__ __host__ inline vector3<T> cross(const vector3<T> &left,
+                                            const vector3<T> &right)
 {
 
-    return vector3<T>{left.y() * right.z() - left.z() * right.u(),
+    return vector3<T>{left.y() * right.z() - left.z() * right.y(),
                       left.z() * right.x() - left.x() * right.z(),
                       left.x() * right.y() - left.y() * right.x()};
 }
 
 template <typename T>
-__device__ inline T normalize_device(const vector3<T> &vec)
+__device__ inline vector3<T> normalize_device(const vector3<T> &vec)
 {
     return vec / vec.magnitude_device();
 }
 
-template <typename T> __host__ inline T normalize_host(const vector3<T> &vec)
+template <typename T>
+__host__ inline vector3<T> normalize_host(const vector3<T> &vec)
 {
     return vec / vec.magnitude_host();
 }
