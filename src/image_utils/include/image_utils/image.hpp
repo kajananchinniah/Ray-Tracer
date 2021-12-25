@@ -22,22 +22,25 @@ namespace RayTracer
 /// This struct can be used in cuda kernels.
 /// Ideally, this should be passed along side an image buffer.
 struct ImageProperties {
-    ImageProperties(s64 w, s64 h, ImageEncodings e = ImageEncodings::kBGR8)
-        : width{w}, height{h}, channels{3}, encoding{e}
-    {
-    }
+    ImageProperties(s64 w, s64 h, ImageEncodings e = ImageEncodings::kBGR8);
 
     /// The width of the image
-    s64 width{};
+    const s64 width{};
 
     /// The height of the image
-    s64 height{};
+    const s64 height{};
 
     /// The number of channels of the image
-    s64 channels{};
+    const s64 channels{};
 
     /// The encoding of the image
-    ImageEncodings encoding{};
+    const ImageEncodings encoding{};
+
+    const s64 red_offset{};
+
+    const s64 green_offset{};
+
+    const s64 blue_offset{};
 
     /// @brief Calculates the size of the image's data buffer
     ///
@@ -73,6 +76,21 @@ struct ImageProperties {
     {
         return v * pitch() + u * colourStep() + c;
     }
+
+    __device__ __host__ s64 redIndex(s64 u, s64 v) const
+    {
+        return flattenedIndex(u, v, red_offset);
+    }
+
+    __device__ __host__ s64 greenIndex(s64 u, s64 v) const
+    {
+        return flattenedIndex(u, v, green_offset);
+    }
+
+    __device__ __host__ s64 blueIndex(s64 u, s64 v) const
+    {
+        return flattenedIndex(u, v, blue_offset);
+    }
 };
 
 /// Holds relevant properties to work with images and a pointer to an image
@@ -86,7 +104,7 @@ struct Image {
     }
 
     /// Holds relevant image properties
-    ImageProperties properties;
+    const ImageProperties properties;
 
     /// A data buffer holding the pixels of an image
     std::unique_ptr<u8[], decltype(&cudaFree)> data_buffer{nullptr, cudaFree};
@@ -102,6 +120,21 @@ struct Image {
         return data_buffer[properties.flattenedIndex(u, v, c)];
     }
 
+    __host__ u8 &atRed(s64 u, s64 v)
+    {
+        return data_buffer[properties.redIndex(u, v)];
+    }
+
+    __host__ u8 &atGreen(s64 u, s64 v)
+    {
+        return data_buffer[properties.greenIndex(u, v)];
+    }
+
+    __host__ u8 &atBlue(s64 u, s64 v)
+    {
+        return data_buffer[properties.blueIndex(u, v)];
+    }
+
     /// @brief Gets the element at (u, v, c) in the image
     ///
     /// @param u The u coordinate (e.g. along the width) of interest
@@ -113,26 +146,26 @@ struct Image {
         return data_buffer[properties.flattenedIndex(u, v, c)];
     }
 
-    __host__ void writeColorAt(Color color, s64 u, s64 v)
+    __host__ const u8 &atRed(s64 u, s64 v) const
     {
-        s64 red_idx, green_idx, blue_idx;
-        switch (properties.encoding) {
-        case ImageEncodings::kRGB8:
-            red_idx = 0;
-            green_idx = 1;
-            blue_idx = 2;
-            break;
-        case ImageEncodings::kBGR8:
-            blue_idx = 0;
-            green_idx = 1;
-            red_idx = 2;
-            break;
-        default:
-            return;
-        }
-        at(u, v, red_idx) = static_cast<u8>(255.999 * color.x());
-        at(u, v, green_idx) = static_cast<u8>(255.999 * color.y());
-        at(u, v, blue_idx) = static_cast<u8>(255.999 * color.z());
+        return data_buffer[properties.redIndex(u, v)];
+    }
+
+    __host__ const u8 &atGreen(s64 u, s64 v) const
+    {
+        return data_buffer[properties.greenIndex(u, v)];
+    }
+
+    __host__ const u8 &atBlue(s64 u, s64 v) const
+    {
+        return data_buffer[properties.blueIndex(u, v)];
+    }
+
+    __host__ void writeColourAt(Colour colour, s64 u, s64 v)
+    {
+        atRed(u, v) = static_cast<u8>(255.999 * colour.x());
+        atGreen(u, v) = static_cast<u8>(255.999 * colour.y());
+        atBlue(u, v) = static_cast<u8>(255.999 * colour.z());
     }
 };
 

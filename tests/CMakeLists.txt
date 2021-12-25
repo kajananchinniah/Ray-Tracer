@@ -20,4 +20,8 @@ add_test(TestVector3 test_vector3)
 
 # Rendering
 add_executable(test_render test_render.cu)
-target_link_libraries(test_render PUBLIC raytracer_image_utils raytracer_common)
+target_include_directories(test_render PRIVATE ${GTEST_INCLUDE_DIRS})
+target_link_libraries(
+  test_render PRIVATE ${COMMON_TEST_LIBRARIES} raytracer_image_utils
+                      raytracer_common)
+add_test(TestRender test_render)

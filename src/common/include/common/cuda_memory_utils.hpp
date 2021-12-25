@@ -103,6 +103,11 @@ void copyCudaMemory(T *dst, const T *src, u64 size,
 /// @param ptr The pointer that will be deallocated.
 void deallocateCudaMemory(void *ptr);
 
+/// @brief Checks for the last error and synchronizes device with host.
+/// This means that the CPU will not perform any useful work until
+/// all cuda kernels are finished executing.
+void waitForCuda();
+
 } // namespace cuda
 
 } // namespace RayTracer

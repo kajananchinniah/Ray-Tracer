@@ -36,8 +36,14 @@ void deallocateCudaMemory(void *ptr)
 {
     CHECK_CUDA_ERRORS(cudaFree(ptr));
 }
+
 } // namespace lowlevel
 
+void waitForCuda()
+{
+    CHECK_CUDA_ERRORS(cudaGetLastError());
+    CHECK_CUDA_ERRORS(cudaDeviceSynchronize());
+}
 } // namespace cuda
 
 } // namespace RayTracer

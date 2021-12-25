@@ -206,7 +206,7 @@ __host__ inline vector3<T> normalize_host(const vector3<T> &vec)
 using vector3f32 = vector3<f32>;
 using vector3f64 = vector3<f64>;
 
-using Color = vector3f32;
+using Colour = vector3f32;
 using Point3f = vector3f32;
 
 } // namespace RayTracer
