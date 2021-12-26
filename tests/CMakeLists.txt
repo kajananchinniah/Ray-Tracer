@@ -24,4 +24,5 @@ target_include_directories(test_render PRIVATE ${GTEST_INCLUDE_DIRS})
 target_link_libraries(
   test_render PRIVATE ${COMMON_TEST_LIBRARIES} raytracer_image_utils
                       raytracer_common)
-add_test(TestRender test_render)
+add_test(TestRender test_render
+         ${CMAKE_CURRENT_LIST_DIR}/test_resources/test_basic_render.png)

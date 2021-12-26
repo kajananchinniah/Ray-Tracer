@@ -61,7 +61,17 @@ TEST(Render, BasicRender)
     test_render_cuda<<<blocks, threads>>>(image.data_buffer.get(),
                                           image.properties);
     cuda::waitForCuda();
-    ImageUtils::saveImage("test_render_basic.png", image);
+
+    auto maybe_image = ImageUtils::readImage(g_image_file_path);
+    EXPECT_TRUE(maybe_image);
+    auto &ground_truth = maybe_image.value();
+    for (s64 v = 0; v < image.properties.height; ++v) {
+        for (s64 u = 0; u < image.properties.width; ++u) {
+            ASSERT_EQ(image.atRed(u, v), ground_truth.atRed(u, v));
+            ASSERT_EQ(image.atGreen(u, v), ground_truth.atGreen(u, v));
+            ASSERT_EQ(image.atBlue(u, v), ground_truth.atBlue(u, v));
+        }
+    }
 }
 
 } // namespace RayTracer
@@ -69,7 +79,7 @@ TEST(Render, BasicRender)
 int main(int argc, char **argv)
 {
     ::testing::InitGoogleTest(&argc, argv);
-    // assert(argc == 2);
-    // g_image_file_path = argv[1];
+    assert(argc == 2);
+    g_image_file_path = argv[1];
     return RUN_ALL_TESTS();
 }

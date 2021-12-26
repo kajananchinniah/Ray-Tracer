@@ -24,25 +24,6 @@ constexpr u64 kTestImageChannels{3};
 static void readImageSuccessBase(const char *file_path,
                                  ImageEncodings test_encoding)
 {
-    u64 red_idx{};
-    u64 green_idx{};
-    u64 blue_idx{};
-
-    switch (test_encoding) {
-    case ImageEncodings::kRGB8:
-        red_idx = 0;
-        green_idx = 1;
-        blue_idx = 2;
-        break;
-    case ImageEncodings::kBGR8:
-        blue_idx = 0;
-        green_idx = 1;
-        red_idx = 2;
-        break;
-    default:
-        EXPECT_TRUE(false);
-    }
-
     auto maybe_image = ImageUtils::readImage(file_path, test_encoding);
     EXPECT_TRUE(maybe_image);
     auto &image = maybe_image.value();
@@ -52,9 +33,9 @@ static void readImageSuccessBase(const char *file_path,
     EXPECT_EQ(image.properties.encoding, test_encoding);
     for (s64 v = 0; v < image.properties.height; ++v) {
         for (s64 u = 0; u < image.properties.width; ++u) {
-            ASSERT_EQ(image.at(u, v, red_idx), 0x12);
-            ASSERT_EQ(image.at(u, v, green_idx), 0x34);
-            ASSERT_EQ(image.at(u, v, blue_idx), 0x56);
+            ASSERT_EQ(image.atRed(u, v), 0x12);
+            ASSERT_EQ(image.atGreen(u, v), 0x34);
+            ASSERT_EQ(image.atBlue(u, v), 0x56);
         }
     }
 }
