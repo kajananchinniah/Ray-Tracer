@@ -43,6 +43,21 @@ __global__ void testBasicRenderCuda(RayTracer::u8 *image_buffer,
 namespace RayTracer
 {
 
+void checkIfImagesAreEqual(const Image &left, const Image &right)
+{
+    EXPECT_EQ(left.properties.height, right.properties.height);
+    EXPECT_EQ(left.properties.width, right.properties.height);
+    EXPECT_EQ(left.properties.channels, right.properties.channels);
+    EXPECT_EQ(left.properties.encoding, right.properties.encoding);
+    for (s64 v = 0; v < left.properties.height; ++v) {
+        for (s64 u = 0; u < left.properties.width; ++u) {
+            ASSERT_EQ(left.atRed(u, v), right.atRed(u, v));
+            ASSERT_EQ(left.atGreen(u, v), right.atGreen(u, v));
+            ASSERT_EQ(left.atBlue(u, v), right.atBlue(u, v));
+        }
+    }
+}
+
 TEST(Render, BasicRender)
 {
     constexpr int image_width{256};
@@ -57,20 +72,15 @@ TEST(Render, BasicRender)
 
     constexpr dim3 blocks(blocks_x, blocks_y, 1);
 
+    cuda::prefetchToGpu(image.data_buffer.get(), image.properties.size());
     testBasicRenderCuda<<<blocks, threads>>>(image.data_buffer.get(),
                                              image.properties);
     cuda::waitForCuda();
 
     auto maybe_image = ImageUtils::readImage(g_image_file_path);
     EXPECT_TRUE(maybe_image);
-    auto &ground_truth = maybe_image.value();
-    for (s64 v = 0; v < image.properties.height; ++v) {
-        for (s64 u = 0; u < image.properties.width; ++u) {
-            ASSERT_EQ(image.atRed(u, v), ground_truth.atRed(u, v));
-            ASSERT_EQ(image.atGreen(u, v), ground_truth.atGreen(u, v));
-            ASSERT_EQ(image.atBlue(u, v), ground_truth.atBlue(u, v));
-        }
-    }
+    const auto &ground_truth = maybe_image.value();
+    checkIfImagesAreEqual(image, ground_truth);
 }
 
 } // namespace RayTracer
