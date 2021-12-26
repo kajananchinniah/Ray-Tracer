@@ -14,8 +14,8 @@ namespace
 
 const char *g_image_file_path{};
 
-__global__ void test_render_cuda(RayTracer::u8 *image_buffer,
-                                 RayTracer::ImageProperties properties)
+__global__ void testBasicRenderCuda(RayTracer::u8 *image_buffer,
+                                    RayTracer::ImageProperties properties)
 {
     RayTracer::u64 u_idx = blockIdx.x * blockDim.x + threadIdx.x;
     RayTracer::u64 u_stride = gridDim.x * blockDim.x;
@@ -58,8 +58,8 @@ TEST(Render, BasicRender)
 
     constexpr dim3 blocks(blocks_x, blocks_y, 1);
 
-    test_render_cuda<<<blocks, threads>>>(image.data_buffer.get(),
-                                          image.properties);
+    testBasicRenderCuda<<<blocks, threads>>>(image.data_buffer.get(),
+                                             image.properties);
     cuda::waitForCuda();
 
     auto maybe_image = ImageUtils::readImage(g_image_file_path);
