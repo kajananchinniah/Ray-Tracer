@@ -30,11 +30,11 @@ __global__ void test_render_cuda(RayTracer::u8 *image_buffer,
                                          (properties.height - 1),
                                      0.25);
             image_buffer[properties.redIndex(u, v)] =
-                static_cast<RayTracer::u8>(255.999 * colour.z());
+                static_cast<RayTracer::u8>(255.999 * colour.x());
             image_buffer[properties.greenIndex(u, v)] =
                 static_cast<RayTracer::u8>(255.999 * colour.y());
             image_buffer[properties.blueIndex(u, v)] =
-                static_cast<RayTracer::u8>(255.999 * colour.x());
+                static_cast<RayTracer::u8>(255.999 * colour.z());
         }
     }
 }

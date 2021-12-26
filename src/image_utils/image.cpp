@@ -9,7 +9,7 @@ RayTracer::s64 getRedIndex(RayTracer::ImageEncodings e)
 {
     switch (e) {
     case RayTracer::ImageEncodings::kBGR8:
-        return 3;
+        return 2;
     case RayTracer::ImageEncodings::kRGB8:
         return 0;
     default:
@@ -37,7 +37,7 @@ RayTracer::s64 getBlueIndex(RayTracer::ImageEncodings e)
     case RayTracer::ImageEncodings::kBGR8:
         return 0;
     case RayTracer::ImageEncodings::kRGB8:
-        return 3;
+        return 2;
     default:
         std::cout << "Received unexpected encoding!";
         std::exit(1);
