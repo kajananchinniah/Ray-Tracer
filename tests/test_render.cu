@@ -2,6 +2,7 @@
 
 #include "common/common_types.hpp"
 #include "common/cuda_memory_utils.hpp"
+#include "image_utils/cuda_image_utils.hpp"
 #include "image_utils/image.hpp"
 #include "image_utils/image_utils.hpp"
 #include "vector3/vector3.hpp"
@@ -25,16 +26,14 @@ __global__ void testBasicRenderCuda(RayTracer::u8 *image_buffer,
 
     for (RayTracer::u64 v = v_idx; v < properties.height; v += v_stride) {
         for (RayTracer::u64 u = u_idx; u < properties.width; u += u_stride) {
-            RayTracer::Colour colour(double(u) / (properties.width - 1),
-                                     double(properties.height - v - 1) /
-                                         (properties.height - 1),
-                                     0.25);
-            image_buffer[properties.redIndex(u, v)] =
-                static_cast<RayTracer::u8>(255.999 * colour.x());
-            image_buffer[properties.greenIndex(u, v)] =
-                static_cast<RayTracer::u8>(255.999 * colour.y());
-            image_buffer[properties.blueIndex(u, v)] =
-                static_cast<RayTracer::u8>(255.999 * colour.z());
+            float red{static_cast<RayTracer::f32>(u) /
+                      static_cast<RayTracer::f32>(properties.width - 1)};
+            float green{static_cast<RayTracer::f32>(properties.height - v - 1) /
+                        static_cast<RayTracer::f32>(properties.height - 1)};
+            float blue{0.25};
+            RayTracer::Colour colour{red, green, blue};
+            RayTracer::cuda::writeColourAt(image_buffer, properties, colour, u,
+                                           v);
         }
     }
 }

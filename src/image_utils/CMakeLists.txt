@@ -1,8 +1,9 @@
 find_package(OpenCV REQUIRED)
 
 add_library(
-  raytracer_image_utils image_utils.cpp image.cpp include/image_utils/image.hpp
-                        include/image_utils/image_utils.hpp)
+  raytracer_image_utils
+  image_utils.cpp image.cpp cuda_image_utils.cu include/image_utils/image.hpp
+  include/image_utils/image_utils.hpp)
 target_link_libraries(
   raytracer_image_utils
   PUBLIC raytracer_common raytracer_vector3

@@ -26,3 +26,4 @@ target_link_libraries(
                       raytracer_common)
 add_test(TestRender test_render
          ${CMAKE_CURRENT_LIST_DIR}/test_resources/test_basic_render.png)
+set_target_properties(test_render PROPERTIES CUDA_RESOLVE_DEVICE_SYMBOLS ON)
