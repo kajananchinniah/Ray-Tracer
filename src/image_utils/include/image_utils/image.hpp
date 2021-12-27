@@ -45,7 +45,7 @@ struct ImageProperties {
     /// @brief Calculates the size of the image's data buffer
     ///
     /// @return The size of the image data buffer
-    __device__ __host__ s64 size() const
+    __device__ __host__ u64 size() const
     {
         return width * height * channels * sizeof(u8);
     }
@@ -163,9 +163,10 @@ struct Image {
 
     __host__ void writeColourAt(Colour colour, s64 u, s64 v)
     {
-        atRed(u, v) = static_cast<u8>(255.999 * colour.x());
-        atGreen(u, v) = static_cast<u8>(255.999 * colour.y());
-        atBlue(u, v) = static_cast<u8>(255.999 * colour.z());
+        constexpr f32 kF32ToU8{255.999};
+        atRed(u, v) = static_cast<u8>(kF32ToU8 * colour.x());
+        atGreen(u, v) = static_cast<u8>(kF32ToU8 * colour.y());
+        atBlue(u, v) = static_cast<u8>(kF32ToU8 * colour.z());
     }
 };
 

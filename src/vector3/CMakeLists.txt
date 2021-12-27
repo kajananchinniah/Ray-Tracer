@@ -1,2 +1,3 @@
 add_library(raytracer_vector3 INTERFACE)
 target_include_directories(raytracer_vector3 INTERFACE include)
+target_link_libraries(raytracer_vector3 INTERFACE raytracer_common)
