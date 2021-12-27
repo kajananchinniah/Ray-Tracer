@@ -10,14 +10,14 @@
 namespace RayTracer
 {
 
-class vector3f
+class Vector3f
 {
 public:
-    __device__ __host__ vector3f() : x_{0}, y_{0}, z_{0}
+    __device__ __host__ Vector3f() : x_{0}, y_{0}, z_{0}
     {
     }
 
-    __device__ __host__ vector3f(f32 x, f32 y, f32 z) : x_{x}, y_{y}, z_{z}
+    __device__ __host__ Vector3f(f32 x, f32 y, f32 z) : x_{x}, y_{y}, z_{z}
     {
     }
 
@@ -51,12 +51,12 @@ public:
         return z_;
     }
 
-    __device__ __host__ vector3f operator-() const
+    __device__ __host__ Vector3f operator-() const
     {
-        return vector3f{-x_, -y_, -z_};
+        return Vector3f{-x_, -y_, -z_};
     }
 
-    __device__ __host__ vector3f &operator+=(const vector3f &other)
+    __device__ __host__ Vector3f &operator+=(const Vector3f &other)
     {
         x_ += other.x();
         y_ += other.y();
@@ -64,7 +64,7 @@ public:
         return *this;
     }
 
-    __device__ __host__ vector3f &operator-=(const vector3f &other)
+    __device__ __host__ Vector3f &operator-=(const Vector3f &other)
     {
         x_ -= other.x();
         y_ -= other.y();
@@ -72,7 +72,7 @@ public:
         return *this;
     }
 
-    __device__ __host__ vector3f &operator*=(const f32 t)
+    __device__ __host__ Vector3f &operator*=(const f32 t)
     {
         x_ = x_ * t;
         y_ = y_ * t;
@@ -80,7 +80,7 @@ public:
         return *this;
     }
 
-    __device__ __host__ vector3f &operator/=(const f32 t)
+    __device__ __host__ Vector3f &operator/=(const f32 t)
     {
         f32 factor = 1 / t;
         x_ = x_ * factor;
@@ -126,73 +126,73 @@ private:
     f32 z_;
 };
 
-inline std::ostream &operator<<(std::ostream &out, const vector3f &vec)
+inline std::ostream &operator<<(std::ostream &out, const Vector3f &vec)
 {
     return out << vec.x() << ' ' << vec.y() << ' ' << vec.z();
 }
 
-__device__ __host__ inline vector3f operator+(const vector3f &left,
-                                              const vector3f &right)
+__device__ __host__ inline Vector3f operator+(const Vector3f &left,
+                                              const Vector3f &right)
 {
-    return vector3f{left.x() + right.x(), left.y() + right.y(),
+    return Vector3f{left.x() + right.x(), left.y() + right.y(),
                     left.z() + right.z()};
 }
 
-__device__ __host__ inline vector3f operator-(const vector3f &left,
-                                              const vector3f &right)
+__device__ __host__ inline Vector3f operator-(const Vector3f &left,
+                                              const Vector3f &right)
 {
-    return vector3f{left.x() - right.x(), left.y() - right.y(),
+    return Vector3f{left.x() - right.x(), left.y() - right.y(),
                     left.z() - right.z()};
 }
 
-__device__ __host__ inline vector3f operator*(const vector3f &left,
-                                              const vector3f &right)
+__device__ __host__ inline Vector3f operator*(const Vector3f &left,
+                                              const Vector3f &right)
 {
-    return vector3f{left.x() * right.x(), left.y() * right.y(),
+    return Vector3f{left.x() * right.x(), left.y() * right.y(),
                     left.z() * right.z()};
 }
 
-__device__ __host__ inline vector3f operator*(f32 t, const vector3f &vec)
+__device__ __host__ inline Vector3f operator*(f32 t, const Vector3f &vec)
 {
-    return vector3f{vec.x() * t, vec.y() * t, vec.z() * t};
+    return Vector3f{vec.x() * t, vec.y() * t, vec.z() * t};
 }
 
-__device__ __host__ inline vector3f operator*(const vector3f &vec, f32 t)
+__device__ __host__ inline Vector3f operator*(const Vector3f &vec, f32 t)
 {
     return t * vec;
 }
 
-__device__ __host__ inline vector3f operator/(const vector3f &vec, f32 t)
+__device__ __host__ inline Vector3f operator/(const Vector3f &vec, f32 t)
 {
     return (1.0f / t) * vec;
 }
 
-__device__ __host__ inline f32 dot(const vector3f &left, const vector3f &right)
+__device__ __host__ inline f32 dot(const Vector3f &left, const Vector3f &right)
 {
     return left.x() * right.x() + left.y() * right.y() + left.z() * right.z();
 }
 
-__device__ __host__ inline vector3f cross(const vector3f &left,
-                                          const vector3f &right)
+__device__ __host__ inline Vector3f cross(const Vector3f &left,
+                                          const Vector3f &right)
 {
 
-    return vector3f{left.y() * right.z() - left.z() * right.y(),
+    return Vector3f{left.y() * right.z() - left.z() * right.y(),
                     left.z() * right.x() - left.x() * right.z(),
                     left.x() * right.y() - left.y() * right.x()};
 }
 
-__device__ inline vector3f normalize_device(const vector3f &vec)
+__device__ inline Vector3f normalize_device(const Vector3f &vec)
 {
     return vec / vec.magnitude_device();
 }
 
-__host__ inline vector3f normalize_host(const vector3f &vec)
+__host__ inline Vector3f normalize_host(const Vector3f &vec)
 {
     return vec / vec.magnitude_host();
 }
 
-using Colour = vector3f;
-using Point3f = vector3f;
+using Colour = Vector3f;
+using Point3f = Vector3f;
 
 } // namespace RayTracer
 
