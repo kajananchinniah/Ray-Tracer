@@ -203,11 +203,11 @@ __host__ inline vector3<T> normalize_host(const vector3<T> &vec)
     return vec / vec.magnitude_host();
 }
 
-using vector3f32 = vector3<f32>;
-using vector3f64 = vector3<f64>;
+using vector3f = vector3<f32>;
+using vector3d = vector3<f64>;
 
-using Colour = vector3f32;
-using Point3f = vector3f32;
+using Colour = vector3f;
+using Point3f = vector3f;
 
 } // namespace RayTracer
 
