@@ -1,6 +1,5 @@
 ---
-Checks: >
-'clang-diagnostic-*,clang-analyzer-*,bugprone-*,cert-*,cppcoreguidelines-*,performance-*,portability-*,readability-*,misc-*,'
+Checks: 'clang-diagnostic-*,clang-analyzer-*,bugprone-*,cert-*,cppcoreguidelines-*,performance-*,portability-*,readability-*,misc-*,'
 WarningsAsErrors: '*'
 HeaderFilterRegex: ''
 FormatStyle:     none
