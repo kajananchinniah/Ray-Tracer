@@ -3,10 +3,6 @@
 Goal:
 - Practice CUDA
 
-TODO
-- Figure out how conan works for package managing (I had trouble getting it
-  working w/ cmake)
-
 Dependencies:
 - CUDA + NVCC compiler
 - OpenCV (only for image I/O)
