@@ -10,53 +10,53 @@
 namespace RayTracer
 {
 
-template <typename T> class vector3
+class vector3f
 {
 public:
-    __device__ __host__ vector3() : x_{0}, y_{0}, z_{0}
+    __device__ __host__ vector3f() : x_{0}, y_{0}, z_{0}
     {
     }
 
-    __device__ __host__ vector3(T x, T y, T z) : x_{x}, y_{y}, z_{z}
+    __device__ __host__ vector3f(f32 x, f32 y, f32 z) : x_{x}, y_{y}, z_{z}
     {
     }
 
-    __device__ __host__ T &x()
-    {
-        return x_;
-    }
-
-    __device__ __host__ T &y()
-    {
-        return y_;
-    }
-
-    __device__ __host__ T &z()
-    {
-        return z_;
-    }
-
-    __device__ __host__ const T &x() const
+    __device__ __host__ f32 &x()
     {
         return x_;
     }
 
-    __device__ __host__ const T &y() const
+    __device__ __host__ f32 &y()
     {
         return y_;
     }
 
-    __device__ __host__ const T &z() const
+    __device__ __host__ f32 &z()
     {
         return z_;
     }
 
-    __device__ __host__ vector3<T> operator-() const
+    __device__ __host__ const f32 &x() const
     {
-        return vector3<T>{-x_, -y_, -z_};
+        return x_;
     }
 
-    __device__ __host__ vector3<T> &operator+=(const vector3<T> &other)
+    __device__ __host__ const f32 &y() const
+    {
+        return y_;
+    }
+
+    __device__ __host__ const f32 &z() const
+    {
+        return z_;
+    }
+
+    __device__ __host__ vector3f operator-() const
+    {
+        return vector3f{-x_, -y_, -z_};
+    }
+
+    __device__ __host__ vector3f &operator+=(const vector3f &other)
     {
         x_ += other.x();
         y_ += other.y();
@@ -64,7 +64,7 @@ public:
         return *this;
     }
 
-    __device__ __host__ vector3<T> &operator-=(const vector3<T> &other)
+    __device__ __host__ vector3f &operator-=(const vector3f &other)
     {
         x_ -= other.x();
         y_ -= other.y();
@@ -72,7 +72,7 @@ public:
         return *this;
     }
 
-    __device__ __host__ vector3<T> &operator*=(const T t)
+    __device__ __host__ vector3f &operator*=(const f32 t)
     {
         x_ = x_ * t;
         y_ = y_ * t;
@@ -80,26 +80,26 @@ public:
         return *this;
     }
 
-    __device__ __host__ vector3<T> &operator/=(const T t)
+    __device__ __host__ vector3f &operator/=(const f32 t)
     {
-        auto factor = static_cast<T>(1 / t);
+        f32 factor = 1 / t;
         x_ = x_ * factor;
         y_ = y_ * factor;
         z_ = z_ * factor;
         return *this;
     }
 
-    __device__ __host__ T magnitude_squared() const
+    __device__ __host__ f32 magnitude_squared() const
     {
         return x_ * x_ + y_ * y_ + z_ * z_;
     }
 
-    __device__ T magnitude_device() const
+    __device__ f32 magnitude_device() const
     {
         return sqrt(magnitude_squared());
     }
 
-    __host__ T magnitude_host() const
+    __host__ f32 magnitude_host() const
     {
         return std::sqrt(magnitude_squared());
     }
@@ -121,90 +121,75 @@ public:
     }
 
 private:
-    T x_;
-    T y_;
-    T z_;
+    f32 x_;
+    f32 y_;
+    f32 z_;
 };
 
-template <typename T>
-inline std::ostream &operator<<(std::ostream &out, const vector3<T> &vec)
+inline std::ostream &operator<<(std::ostream &out, const vector3f &vec)
 {
     return out << vec.x() << ' ' << vec.y() << ' ' << vec.z();
 }
 
-template <typename T>
-__device__ __host__ inline vector3<T> operator+(const vector3<T> &left,
-                                                const vector3<T> &right)
+__device__ __host__ inline vector3f operator+(const vector3f &left,
+                                              const vector3f &right)
 {
-    return vector3<T>{left.x() + right.x(), left.y() + right.y(),
-                      left.z() + right.z()};
+    return vector3f{left.x() + right.x(), left.y() + right.y(),
+                    left.z() + right.z()};
 }
 
-template <typename T>
-__device__ __host__ inline vector3<T> operator-(const vector3<T> &left,
-                                                const vector3<T> &right)
+__device__ __host__ inline vector3f operator-(const vector3f &left,
+                                              const vector3f &right)
 {
-    return vector3<T>{left.x() - right.x(), left.y() - right.y(),
-                      left.z() - right.z()};
+    return vector3f{left.x() - right.x(), left.y() - right.y(),
+                    left.z() - right.z()};
 }
 
-template <typename T>
-__device__ __host__ inline vector3<T> operator*(const vector3<T> &left,
-                                                const vector3<T> &right)
+__device__ __host__ inline vector3f operator*(const vector3f &left,
+                                              const vector3f &right)
 {
-    return vector3<T>{left.x() * right.x(), left.y() * right.y(),
-                      left.z() * right.z()};
+    return vector3f{left.x() * right.x(), left.y() * right.y(),
+                    left.z() * right.z()};
 }
 
-template <typename T>
-__device__ __host__ inline vector3<T> operator*(T t, const vector3<T> &vec)
+__device__ __host__ inline vector3f operator*(f32 t, const vector3f &vec)
 {
-    return vector3<T>{vec.x() * t, vec.y() * t, vec.z() * t};
+    return vector3f{vec.x() * t, vec.y() * t, vec.z() * t};
 }
 
-template <typename T>
-__device__ __host__ inline vector3<T> operator*(const vector3<T> &vec, T t)
+__device__ __host__ inline vector3f operator*(const vector3f &vec, f32 t)
 {
     return t * vec;
 }
 
-template <typename T>
-__device__ __host__ inline vector3<T> operator/(const vector3<T> &vec, T t)
+__device__ __host__ inline vector3f operator/(const vector3f &vec, f32 t)
 {
-    return static_cast<T>(1.0 / t) * vec;
+    return (1.0f / t) * vec;
 }
 
-template <typename T>
-__device__ __host__ inline T dot(const vector3<T> &left,
-                                 const vector3<T> &right)
+__device__ __host__ inline f32 dot(const vector3f &left, const vector3f &right)
 {
     return left.x() * right.x() + left.y() * right.y() + left.z() * right.z();
 }
 
-template <typename T>
-__device__ __host__ inline vector3<T> cross(const vector3<T> &left,
-                                            const vector3<T> &right)
+__device__ __host__ inline vector3f cross(const vector3f &left,
+                                          const vector3f &right)
 {
 
-    return vector3<T>{left.y() * right.z() - left.z() * right.y(),
-                      left.z() * right.x() - left.x() * right.z(),
-                      left.x() * right.y() - left.y() * right.x()};
+    return vector3f{left.y() * right.z() - left.z() * right.y(),
+                    left.z() * right.x() - left.x() * right.z(),
+                    left.x() * right.y() - left.y() * right.x()};
 }
 
-template <typename T>
-__device__ inline vector3<T> normalize_device(const vector3<T> &vec)
+__device__ inline vector3f normalize_device(const vector3f &vec)
 {
     return vec / vec.magnitude_device();
 }
 
-template <typename T>
-__host__ inline vector3<T> normalize_host(const vector3<T> &vec)
+__host__ inline vector3f normalize_host(const vector3f &vec)
 {
     return vec / vec.magnitude_host();
 }
-
-using vector3f = vector3<f32>;
-using vector3d = vector3<f64>;
 
 using Colour = vector3f;
 using Point3f = vector3f;
