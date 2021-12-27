@@ -8,9 +8,8 @@ set(COMMON_TEST_LIBRARIES ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} pthread)
 # Image Utils
 add_executable(test_image_utils test_image_utils.cpp)
 target_include_directories(test_image_utils PRIVATE ${GTEST_INCLUDE_DIRS})
-target_link_libraries(
-  test_image_utils PRIVATE ${COMMON_TEST_LIBRARIES} raytracer_common
-                           raytracer_image_utils)
+target_link_libraries(test_image_utils PRIVATE ${COMMON_TEST_LIBRARIES}
+                                               raytracer_common raytracer_image)
 add_test(TestImageUtils test_image_utils
          ${CMAKE_CURRENT_LIST_DIR}/test_resources/123456.png)
 
@@ -24,9 +23,8 @@ add_test(TestVector3 test_vector3)
 # Rendering
 add_executable(test_render test_render.cu)
 target_include_directories(test_render PRIVATE ${GTEST_INCLUDE_DIRS})
-target_link_libraries(
-  test_render PRIVATE ${COMMON_TEST_LIBRARIES} raytracer_image_utils
-                      raytracer_common)
+target_link_libraries(test_render PRIVATE ${COMMON_TEST_LIBRARIES}
+                                          raytracer_image raytracer_common)
 add_test(TestRender test_render
          ${CMAKE_CURRENT_LIST_DIR}/test_resources/test_basic_render.png)
 set_target_properties(test_render PROPERTIES CUDA_RESOLVE_DEVICE_SYMBOLS ON)

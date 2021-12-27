@@ -3,8 +3,8 @@
 #include "gtest/gtest.h"
 
 #include "common/common_types.hpp"
-#include "image_utils/image.hpp"
-#include "image_utils/image_utils.hpp"
+#include "image/image.hpp"
+#include "image/image_utils.hpp"
 #include <iostream>
 
 namespace

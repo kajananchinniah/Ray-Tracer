@@ -1,4 +1,4 @@
-#include "image_utils/image.hpp"
+#include "image/image.hpp"
 #include "common/common_types.hpp"
 #include <iostream>
 

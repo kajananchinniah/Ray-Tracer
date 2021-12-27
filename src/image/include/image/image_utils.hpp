@@ -1,7 +1,7 @@
 /// @file image_utils.hpp
 /// @brief Contains utility functions to use with images
-#ifndef RAYTRACER_IMAGE_UTILS_IMAGE_UTILS_HPP_
-#define RAYTRACER_IMAGE_UTILS_IMAGE_UTILS_HPP_
+#ifndef RAYTRACER_IMAGE_IMAGE_UTILS_HPP_
+#define RAYTRACER_IMAGE_IMAGE_UTILS_HPP_
 
 #include "image.hpp"
 #include <optional>

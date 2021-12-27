@@ -1,4 +1,4 @@
-#include "image_utils/image_utils.hpp"
+#include "image/image_utils.hpp"
 
 #include "common/common_types.hpp"
 #include "opencv2/opencv.hpp"

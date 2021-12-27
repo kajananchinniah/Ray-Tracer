@@ -1,3 +1,6 @@
+#ifndef RAY_TRACER_IMAGE_CUDA_IMAGE_UTILS_HPP_
+#define RAY_TRACER_IMAGE_CUDA_IMAGE_UTILS_HPP_
+
 #include "common/common_types.hpp"
 #include "image.hpp"
 
@@ -14,3 +17,5 @@ __device__ void writeColourAt(u8 *image_buffer,
 } // namespace cuda
 
 } // namespace RayTracer
+
+#endif // RAY_TRACER_IMAGE_CUDA_IMAGE_UTILS_HPP_

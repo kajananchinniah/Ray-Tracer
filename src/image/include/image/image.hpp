@@ -1,7 +1,7 @@
 ///@file image.hpp
 /// @brief Contains the definition of an image struct
-#ifndef RAYTRACER_IMAGE_UTILS_IMAGE_HPP_
-#define RAYTRACER_IMAGE_UTILS_IMAGE_HPP_
+#ifndef RAYTRACER_IMAGE_IMAGE_HPP_
+#define RAYTRACER_IMAGE_IMAGE_HPP_
 
 #include "common/common_types.hpp"
 #include <memory>
@@ -172,4 +172,4 @@ struct Image {
 
 } // namespace RayTracer
 
-#endif // RAYTRACER_IMAGE_UTILS_IMAGE_HPP_
+#endif // RAYTRACER_IMAGE_IMAGE_HPP_

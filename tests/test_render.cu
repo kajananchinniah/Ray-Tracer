@@ -2,9 +2,9 @@
 
 #include "common/common_types.hpp"
 #include "common/cuda_memory_utils.hpp"
-#include "image_utils/cuda_image_utils.hpp"
-#include "image_utils/image.hpp"
-#include "image_utils/image_utils.hpp"
+#include "image/cuda_image_utils.hpp"
+#include "image/image.hpp"
+#include "image/image_utils.hpp"
 #include "vector3/vector3.hpp"
 
 #include "cuda.h"

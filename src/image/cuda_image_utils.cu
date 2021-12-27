@@ -1,7 +1,7 @@
 #include "common/common_types.hpp"
-#include "image_utils/cuda_image_utils.hpp"
+#include "image/cuda_image_utils.hpp"
 
-#include "image_utils/image.hpp"
+#include "image/image.hpp"
 #include "vector3/vector3.hpp"
 
 namespace RayTracer
