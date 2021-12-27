@@ -1,5 +1,8 @@
 find_package(GTest REQUIRED)
 
+# Ignore clang tidy
+set(CMAKE_CXX_CLANG_TIDY "")
+
 set(COMMON_TEST_LIBRARIES ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} pthread)
 
 # Image Utils
@@ -27,3 +30,8 @@ target_link_libraries(
 add_test(TestRender test_render
          ${CMAKE_CURRENT_LIST_DIR}/test_resources/test_basic_render.png)
 set_target_properties(test_render PROPERTIES CUDA_RESOLVE_DEVICE_SYMBOLS ON)
+
+# Renable clang tidy
+if(CLANG_TIDY)
+  set(CMAKE_CXX_CLANG_TIDY "clang-tidy-10")
+endif()

@@ -22,7 +22,6 @@ RayTracer::s64 getGreenIndex(RayTracer::ImageEncodings e)
 {
     switch (e) {
     case RayTracer::ImageEncodings::kBGR8:
-        return 1;
     case RayTracer::ImageEncodings::kRGB8:
         return 1;
     default:

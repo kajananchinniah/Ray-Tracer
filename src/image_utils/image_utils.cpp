@@ -42,11 +42,11 @@ bool saveImage(const char *filename, const Image &image)
     return cv::imwrite(filename, output_image);
 }
 
-std::optional<Image> readImage(const char *filename,
+std::optional<Image> readImage(const char *filepath,
                                ImageEncodings requested_encoding)
 {
-    cv::Mat cv_image = cv::imread(filename);
-    if (!cv_image.data) {
+    cv::Mat cv_image = cv::imread(filepath);
+    if (cv_image.data == nullptr) {
         return std::nullopt;
     }
 
