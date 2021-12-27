@@ -16,7 +16,6 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 include(CMakeModules/ClangTidy.cmake)
-# include(CMakeModules/Conan.cmake)
 include(docs/Doxygen.cmake)
 include(CTest)
 
