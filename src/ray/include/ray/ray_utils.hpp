@@ -5,7 +5,7 @@
 #include "cuda.h"
 #include "cuda_runtime.h"
 #include "ray.hpp"
-#include "vector3/vector3f.hpp"
+#include "vector3/vector3.hpp"
 
 namespace RayTracer
 {
@@ -13,7 +13,7 @@ namespace RayTracer
 namespace cuda
 {
 
-Colour getRayColour(const Ray &ray)
+__device__ Colour getRayColour(const Ray &ray)
 {
     Vector3f unit_direction = normalize_device(ray.direction());
     f32 t = 0.5f * (unit_direction.y() + 1.0f);
@@ -22,7 +22,7 @@ Colour getRayColour(const Ray &ray)
 
 } // namespace cuda
 
-Colour getRayColour(const Ray &ray)
+__host__ Colour getRayColour(const Ray &ray)
 {
     Vector3f unit_direction = normalize_host(ray.direction());
     f32 t = 0.5f * (unit_direction.y() + 1.0f);
