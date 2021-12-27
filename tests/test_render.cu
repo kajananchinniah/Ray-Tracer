@@ -15,6 +15,21 @@ namespace
 
 const char *g_image_file_path{};
 
+__device__ RayTracer::f32
+getScaledUCoordinate(RayTracer::u64 u,
+                     const RayTracer::ImageProperties &properties)
+{
+    return static_cast<RayTracer::f32>(u) /
+           static_cast<RayTracer::f32>(properties.width - 1);
+}
+
+__device__ RayTracer::f32
+getScaledVCoordinate(RayTracer::u64 v,
+                     const RayTracer::ImageProperties &properties)
+{
+    return static_cast<RayTracer::f32>(properties.height - v - 1) /
+           static_cast<RayTracer::f32>(properties.height - 1);
+}
 __global__ void testBasicRenderCuda(RayTracer::u8 *image_buffer,
                                     RayTracer::ImageProperties properties)
 {
@@ -26,11 +41,9 @@ __global__ void testBasicRenderCuda(RayTracer::u8 *image_buffer,
 
     for (RayTracer::u64 v = v_idx; v < properties.height; v += v_stride) {
         for (RayTracer::u64 u = u_idx; u < properties.width; u += u_stride) {
-            float red{static_cast<RayTracer::f32>(u) /
-                      static_cast<RayTracer::f32>(properties.width - 1)};
-            float green{static_cast<RayTracer::f32>(properties.height - v - 1) /
-                        static_cast<RayTracer::f32>(properties.height - 1)};
-            float blue{0.25};
+            RayTracer::f32 red{getScaledUCoordinate(u, properties)};
+            RayTracer::f32 green{getScaledVCoordinate(v, properties)};
+            RayTracer::f32 blue{0.25};
             RayTracer::Colour colour{red, green, blue};
             RayTracer::cuda::writeColourAt(image_buffer, properties, colour, u,
                                            v);
