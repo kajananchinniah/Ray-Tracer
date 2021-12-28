@@ -78,6 +78,33 @@ __global__ void testBasicRenderWithRayCuda(
     }
 }
 
+__global__ void testBasicRenderWithSphereCuda(
+    RayTracer::u8 *image_buffer, RayTracer::ImageProperties properties,
+    RayTracer::Point3f origin, RayTracer::Vector3f lower_left_corner,
+    RayTracer::Vector3f horizontal, RayTracer::Vector3f vertical)
+{
+
+    RayTracer::u64 u_idx = blockIdx.x * blockDim.x + threadIdx.x;
+    RayTracer::u64 u_stride = gridDim.x * blockDim.x;
+
+    RayTracer::u64 v_idx = blockIdx.y * blockDim.y + threadIdx.y;
+    RayTracer::u64 v_stride = gridDim.y * blockDim.y;
+
+    for (RayTracer::u64 v = v_idx; v < properties.height; v += v_stride) {
+        for (RayTracer::u64 u = u_idx; u < properties.width; u += u_stride) {
+            RayTracer::f32 scaled_u{scaleUCoordinate(u, properties.width)};
+            RayTracer::f32 scaled_v{scaleVCoordinate(v, properties.height)};
+            RayTracer::Ray ray{origin, lower_left_corner +
+                                           scaled_u * horizontal +
+                                           scaled_v * vertical - origin};
+            RayTracer::Colour colour =
+                RayTracer::cuda::getRayColourWithRedSphere(ray);
+            RayTracer::cuda::writeColourAt(image_buffer, properties, colour, u,
+                                           v);
+        }
+    }
+}
+
 } // namespace
 
 namespace RayTracer
@@ -158,6 +185,38 @@ TEST(Render, BasicRenderWithRay)
     EXPECT_TRUE(maybe_image);
     const auto &ground_truth = maybe_image.value();
     checkIfImagesAreEqual(image, ground_truth);
+}
+
+TEST(Render, BasicRenderWithSphere)
+{
+    constexpr f32 aspect_ratio{16.0f / 9.0f};
+    constexpr s32 image_width{400};
+    constexpr s32 image_height{static_cast<int>(image_width / aspect_ratio)};
+
+    constexpr f32 viewport_height{2.0f};
+    constexpr f32 viewport_width{aspect_ratio * viewport_height};
+    constexpr f32 focal_length{1.0f};
+
+    const Point3f origin{0.0f, 0.0f, 0.0f};
+    const Vector3f horizontal{viewport_width, 0.0f, 0.0f};
+    const Vector3f vertical{0.0f, viewport_height, 0.0f};
+    const auto lower_left_corner{origin - horizontal / 2 - vertical / 2 -
+                                 Vector3f{0.0f, 0.0f, focal_length}};
+
+    constexpr dim3 threads{16, 16, 1};
+
+    constexpr s32 blocks_x = (image_width + threads.x - 1) / threads.x;
+    constexpr s32 blocks_y = (image_height - threads.y - 1) / threads.y;
+
+    constexpr dim3 blocks(blocks_x, blocks_y, 1);
+
+    Image image{image_width, image_height};
+    cuda::prefetchToGpu(image.data_buffer.get(), image.properties.size());
+    testBasicRenderWithSphereCuda<<<blocks, threads>>>(
+        image.data_buffer.get(), image.properties, origin, lower_left_corner,
+        horizontal, vertical);
+    cuda::waitForCuda();
+    ImageUtils::saveImage("test_basic_with_sphere.png", image);
 }
 
 } // namespace RayTracer
