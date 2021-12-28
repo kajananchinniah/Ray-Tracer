@@ -1,4 +1,7 @@
 # Ray-Tracer
+Code is heavily inspired / taken at parts from the tutorial:
+https://raytracing.github.io/books/RayTracingInOneWeekend.html but cuda
+accelerated (although there are a few notable differences, such as how images are treated, lack of polymorphism in my code, etc)
 
 Goal:
 - Practice CUDA
