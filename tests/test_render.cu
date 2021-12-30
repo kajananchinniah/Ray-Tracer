@@ -19,6 +19,29 @@ namespace
 {
 
 std::string g_base_absolute_path{};
+constexpr dim3 kThreads{16, 16, 1};
+
+constexpr RayTracer::s32 kTestBasicImageWidth{256};
+constexpr RayTracer::s32 kTestBasicImageHeight{256};
+constexpr dim3 kTestBasicBlocks{
+    (kTestBasicImageWidth + kThreads.x - 1) / kThreads.x,
+    (kTestBasicImageWidth + kThreads.y - 1) / kThreads.y, 1};
+
+constexpr RayTracer::f32 kAspectRatio{16.0 / 9.0};
+constexpr RayTracer::s32 kImageWidth{400};
+constexpr RayTracer::s32 kImageHeight{
+    static_cast<RayTracer::s32>(kImageWidth / kAspectRatio)};
+constexpr RayTracer::f32 kViewportHeight{2.0};
+constexpr RayTracer::f32 kViewportWidth{kAspectRatio * kViewportHeight};
+constexpr RayTracer::f32 kFocalLength{1.0};
+const RayTracer::Point3f kOrigin{0.0, 0.0, 0.0};
+const RayTracer::Vector3f kHorizontal{kViewportWidth, 0.0, 0.0};
+const RayTracer::Vector3f kVertical{0.0, kViewportHeight, 0.0};
+const RayTracer::Vector3f kLowerLeftCorner{
+    kOrigin - kHorizontal / 2 - kVertical / 2 -
+    RayTracer::Vector3f{0.0, 0.0, kFocalLength}};
+constexpr dim3 kBlocks{(kImageWidth + kThreads.x - 1) / kThreads.x,
+                       (kImageHeight + kThreads.y - 1) / kThreads.y, 1};
 
 } // namespace
 
@@ -42,21 +65,11 @@ void checkIfImagesAreEqual(const Image &left, const Image &right)
 
 TEST(Render, BasicRender)
 {
-    constexpr s32 image_width{256};
-    constexpr s32 image_height{256};
-
-    Image image{image_width, image_height};
-
-    constexpr dim3 threads(16, 16, 1);
-
-    constexpr s32 blocks_x = (image_width + threads.x - 1) / threads.x;
-    constexpr s32 blocks_y = (image_height - threads.y - 1) / threads.y;
-
-    constexpr dim3 blocks(blocks_x, blocks_y, 1);
+    Image image{kTestBasicImageWidth, kTestBasicImageHeight};
 
     cuda::prefetchToGpu(image.data_buffer.get(), image.properties.size());
-    testBasicRenderCuda<<<blocks, threads>>>(image.data_buffer.get(),
-                                             image.properties);
+    testBasicRenderCuda<<<kTestBasicBlocks, kThreads>>>(image.data_buffer.get(),
+                                                        image.properties);
     cuda::waitForCuda();
 
     std::string file_path = g_base_absolute_path + "/test_basic_render.png";
@@ -68,32 +81,11 @@ TEST(Render, BasicRender)
 
 TEST(Render, BasicRenderWithRay)
 {
-    constexpr f32 aspect_ratio{16.0f / 9.0f};
-    constexpr s32 image_width{400};
-    constexpr s32 image_height{static_cast<int>(image_width / aspect_ratio)};
-
-    constexpr f32 viewport_height{2.0f};
-    constexpr f32 viewport_width{aspect_ratio * viewport_height};
-    constexpr f32 focal_length{1.0f};
-
-    const Point3f origin{0.0f, 0.0f, 0.0f};
-    const Vector3f horizontal{viewport_width, 0.0f, 0.0f};
-    const Vector3f vertical{0.0f, viewport_height, 0.0f};
-    const auto lower_left_corner{origin - horizontal / 2 - vertical / 2 -
-                                 Vector3f{0.0f, 0.0f, focal_length}};
-
-    constexpr dim3 threads{16, 16, 1};
-
-    constexpr s32 blocks_x = (image_width + threads.x - 1) / threads.x;
-    constexpr s32 blocks_y = (image_height - threads.y - 1) / threads.y;
-
-    constexpr dim3 blocks(blocks_x, blocks_y, 1);
-
-    Image image{image_width, image_height};
+    Image image{kImageWidth, kImageHeight};
     cuda::prefetchToGpu(image.data_buffer.get(), image.properties.size());
-    testBasicRenderWithRayCuda<<<blocks, threads>>>(
-        image.data_buffer.get(), image.properties, origin, lower_left_corner,
-        horizontal, vertical);
+    testBasicRenderWithRayCuda<<<kBlocks, kThreads>>>(
+        image.data_buffer.get(), image.properties, kOrigin, kLowerLeftCorner,
+        kHorizontal, kVertical);
     cuda::waitForCuda();
 
     std::string file_path =
@@ -106,32 +98,11 @@ TEST(Render, BasicRenderWithRay)
 
 TEST(Render, BasicRenderWithSphere)
 {
-    constexpr f32 aspect_ratio{16.0f / 9.0f};
-    constexpr s32 image_width{400};
-    constexpr s32 image_height{static_cast<int>(image_width / aspect_ratio)};
-
-    constexpr f32 viewport_height{2.0f};
-    constexpr f32 viewport_width{aspect_ratio * viewport_height};
-    constexpr f32 focal_length{1.0f};
-
-    const Point3f origin{0.0f, 0.0f, 0.0f};
-    const Vector3f horizontal{viewport_width, 0.0f, 0.0f};
-    const Vector3f vertical{0.0f, viewport_height, 0.0f};
-    const auto lower_left_corner{origin - horizontal / 2 - vertical / 2 -
-                                 Vector3f{0.0f, 0.0f, focal_length}};
-
-    constexpr dim3 threads{16, 16, 1};
-
-    constexpr s32 blocks_x = (image_width + threads.x - 1) / threads.x;
-    constexpr s32 blocks_y = (image_height - threads.y - 1) / threads.y;
-
-    constexpr dim3 blocks(blocks_x, blocks_y, 1);
-
-    Image image{image_width, image_height};
+    Image image{kImageWidth, kImageHeight};
     cuda::prefetchToGpu(image.data_buffer.get(), image.properties.size());
-    testBasicRenderWithSphereCuda<<<blocks, threads>>>(
-        image.data_buffer.get(), image.properties, origin, lower_left_corner,
-        horizontal, vertical);
+    testBasicRenderWithSphereCuda<<<kBlocks, kThreads>>>(
+        image.data_buffer.get(), image.properties, kOrigin, kLowerLeftCorner,
+        kHorizontal, kVertical);
     cuda::waitForCuda();
     ImageUtils::saveImage("test_basic_with_sphere.png", image);
 }
