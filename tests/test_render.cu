@@ -13,11 +13,12 @@
 #include "cuda_runtime.h"
 #include "test_render_kernels.hpp"
 
+#include <string>
+
 namespace
 {
 
-const char *g_test_basic_image_file_path{};
-const char *g_test_basic_image_with_ray_file_path{};
+std::string g_base_absolute_path{};
 
 } // namespace
 
@@ -58,7 +59,8 @@ TEST(Render, BasicRender)
                                              image.properties);
     cuda::waitForCuda();
 
-    auto maybe_image = ImageUtils::readImage(g_test_basic_image_file_path);
+    std::string file_path = g_base_absolute_path + "/test_basic_render.png";
+    auto maybe_image = ImageUtils::readImage(file_path.c_str());
     EXPECT_TRUE(maybe_image);
     const auto &ground_truth = maybe_image.value();
     checkIfImagesAreEqual(image, ground_truth);
@@ -94,8 +96,9 @@ TEST(Render, BasicRenderWithRay)
         horizontal, vertical);
     cuda::waitForCuda();
 
-    auto maybe_image =
-        ImageUtils::readImage(g_test_basic_image_with_ray_file_path);
+    std::string file_path =
+        g_base_absolute_path + "/test_basic_render_with_ray.png";
+    auto maybe_image = ImageUtils::readImage(file_path.c_str());
     EXPECT_TRUE(maybe_image);
     const auto &ground_truth = maybe_image.value();
     checkIfImagesAreEqual(image, ground_truth);
@@ -138,8 +141,7 @@ TEST(Render, BasicRenderWithSphere)
 int main(int argc, char **argv)
 {
     ::testing::InitGoogleTest(&argc, argv);
-    assert(argc == 3);
-    g_test_basic_image_file_path = argv[1];
-    g_test_basic_image_with_ray_file_path = argv[2];
+    assert(argc == 2);
+    g_base_absolute_path = std::string{argv[1]};
     return RUN_ALL_TESTS();
 }
