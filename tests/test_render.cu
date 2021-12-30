@@ -11,99 +11,13 @@
 
 #include "cuda.h"
 #include "cuda_runtime.h"
+#include "test_render_kernels.hpp"
 
 namespace
 {
 
 const char *g_test_basic_image_file_path{};
 const char *g_test_basic_image_with_ray_file_path{};
-
-__device__ RayTracer::f32 scaleUCoordinate(RayTracer::u64 u,
-                                           RayTracer::s64 width)
-{
-    return static_cast<RayTracer::f32>(u) /
-           static_cast<RayTracer::f32>(width - 1);
-}
-
-__device__ RayTracer::f32 scaleVCoordinate(RayTracer::u64 v,
-                                           RayTracer::s64 height)
-{
-    return static_cast<RayTracer::f32>(height - v - 1) /
-           static_cast<RayTracer::f32>(height - 1);
-}
-
-__global__ void testBasicRenderCuda(RayTracer::u8 *image_buffer,
-                                    RayTracer::ImageProperties properties)
-{
-    RayTracer::u64 u_idx = blockIdx.x * blockDim.x + threadIdx.x;
-    RayTracer::u64 u_stride = gridDim.x * blockDim.x;
-
-    RayTracer::u64 v_idx = blockIdx.y * blockDim.y + threadIdx.y;
-    RayTracer::u64 v_stride = gridDim.y * blockDim.y;
-
-    for (RayTracer::u64 v = v_idx; v < properties.height; v += v_stride) {
-        for (RayTracer::u64 u = u_idx; u < properties.width; u += u_stride) {
-            RayTracer::f32 red{scaleUCoordinate(u, properties.width)};
-            RayTracer::f32 green{scaleVCoordinate(v, properties.height)};
-            RayTracer::f32 blue{0.25};
-            RayTracer::Colour colour{red, green, blue};
-            RayTracer::cuda::writeColourAt(image_buffer, properties, colour, u,
-                                           v);
-        }
-    }
-}
-
-__global__ void testBasicRenderWithRayCuda(
-    RayTracer::u8 *image_buffer, RayTracer::ImageProperties properties,
-    RayTracer::Point3f origin, RayTracer::Vector3f lower_left_corner,
-    RayTracer::Vector3f horizontal, RayTracer::Vector3f vertical)
-{
-    RayTracer::u64 u_idx = blockIdx.x * blockDim.x + threadIdx.x;
-    RayTracer::u64 u_stride = gridDim.x * blockDim.x;
-
-    RayTracer::u64 v_idx = blockIdx.y * blockDim.y + threadIdx.y;
-    RayTracer::u64 v_stride = gridDim.y * blockDim.y;
-
-    for (RayTracer::u64 v = v_idx; v < properties.height; v += v_stride) {
-        for (RayTracer::u64 u = u_idx; u < properties.width; u += u_stride) {
-            RayTracer::f32 scaled_u{scaleUCoordinate(u, properties.width)};
-            RayTracer::f32 scaled_v{scaleVCoordinate(v, properties.height)};
-            RayTracer::Ray ray{origin, lower_left_corner +
-                                           scaled_u * horizontal +
-                                           scaled_v * vertical - origin};
-            RayTracer::Colour colour = RayTracer::cuda::getRayColour(ray);
-            RayTracer::cuda::writeColourAt(image_buffer, properties, colour, u,
-                                           v);
-        }
-    }
-}
-
-__global__ void testBasicRenderWithSphereCuda(
-    RayTracer::u8 *image_buffer, RayTracer::ImageProperties properties,
-    RayTracer::Point3f origin, RayTracer::Vector3f lower_left_corner,
-    RayTracer::Vector3f horizontal, RayTracer::Vector3f vertical)
-{
-
-    RayTracer::u64 u_idx = blockIdx.x * blockDim.x + threadIdx.x;
-    RayTracer::u64 u_stride = gridDim.x * blockDim.x;
-
-    RayTracer::u64 v_idx = blockIdx.y * blockDim.y + threadIdx.y;
-    RayTracer::u64 v_stride = gridDim.y * blockDim.y;
-
-    for (RayTracer::u64 v = v_idx; v < properties.height; v += v_stride) {
-        for (RayTracer::u64 u = u_idx; u < properties.width; u += u_stride) {
-            RayTracer::f32 scaled_u{scaleUCoordinate(u, properties.width)};
-            RayTracer::f32 scaled_v{scaleVCoordinate(v, properties.height)};
-            RayTracer::Ray ray{origin, lower_left_corner +
-                                           scaled_u * horizontal +
-                                           scaled_v * vertical - origin};
-            RayTracer::Colour colour =
-                RayTracer::cuda::getRayColourWithRedSphere(ray);
-            RayTracer::cuda::writeColourAt(image_buffer, properties, colour, u,
-                                           v);
-        }
-    }
-}
 
 } // namespace
 
