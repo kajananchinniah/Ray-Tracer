@@ -1,5 +1,6 @@
 #include "gtest/gtest.h"
 
+#include "camera/camera.hpp"
 #include "common/common_types.hpp"
 #include "common/cuda_memory_utils.hpp"
 #include "image/cuda_image_utils.hpp"
@@ -31,15 +32,6 @@ constexpr RayTracer::f32 kAspectRatio{16.0 / 9.0};
 constexpr RayTracer::s32 kImageWidth{400};
 constexpr RayTracer::s32 kImageHeight{
     static_cast<RayTracer::s32>(kImageWidth / kAspectRatio)};
-constexpr RayTracer::f32 kViewportHeight{2.0};
-constexpr RayTracer::f32 kViewportWidth{kAspectRatio * kViewportHeight};
-constexpr RayTracer::f32 kFocalLength{1.0};
-const RayTracer::Point3f kOrigin{0.0, 0.0, 0.0};
-const RayTracer::Vector3f kHorizontal{kViewportWidth, 0.0, 0.0};
-const RayTracer::Vector3f kVertical{0.0, kViewportHeight, 0.0};
-const RayTracer::Vector3f kLowerLeftCorner{
-    kOrigin - kHorizontal / 2 - kVertical / 2 -
-    RayTracer::Vector3f{0.0, 0.0, kFocalLength}};
 constexpr dim3 kBlocks{(kImageWidth + kThreads.x - 1) / kThreads.x,
                        (kImageHeight + kThreads.y - 1) / kThreads.y, 1};
 
@@ -82,10 +74,10 @@ TEST(Render, BasicRender)
 TEST(Render, BasicRenderWithRay)
 {
     Image image{kImageWidth, kImageHeight};
+    Camera camera;
     cuda::prefetchToGpu(image.data_buffer.get(), image.properties.size());
-    testBasicRenderWithRayCuda<<<kBlocks, kThreads>>>(
-        image.data_buffer.get(), image.properties, kOrigin, kLowerLeftCorner,
-        kHorizontal, kVertical);
+    testBasicRenderWithRayCuda<<<kBlocks, kThreads>>>(image.data_buffer.get(),
+                                                      image.properties, camera);
     cuda::waitForCuda();
 
     std::string file_path =
@@ -99,10 +91,10 @@ TEST(Render, BasicRenderWithRay)
 TEST(Render, BasicRenderWithSphere)
 {
     Image image{kImageWidth, kImageHeight};
+    Camera camera;
     cuda::prefetchToGpu(image.data_buffer.get(), image.properties.size());
     testBasicRenderWithSphereCuda<<<kBlocks, kThreads>>>(
-        image.data_buffer.get(), image.properties, kOrigin, kLowerLeftCorner,
-        kHorizontal, kVertical);
+        image.data_buffer.get(), image.properties, camera);
     cuda::waitForCuda();
     ImageUtils::saveImage("test_basic_with_sphere.png", image);
 }
@@ -110,13 +102,14 @@ TEST(Render, BasicRenderWithSphere)
 TEST(Render, BasicRenderWithWorld)
 {
     Image image{kImageWidth, kImageHeight};
+    Camera camera;
     SphereArray world{2};
     ASSERT_TRUE(world.add(Sphere{Point3f(0.0f, 0.0f, -1.0f), 0.5f}));
     ASSERT_TRUE(world.add(Sphere{Point3f(0.0f, -100.5f, -1.0f), 100.0f}));
     cuda::prefetchToGpu(image.data_buffer.get(), image.properties.size());
     testRenderBasicRenderWithWorld<<<kBlocks, kThreads>>>(
-        image.data_buffer.get(), image.properties, kOrigin, kLowerLeftCorner,
-        kHorizontal, kVertical, world.data_buffer.get(), world.properties);
+        image.data_buffer.get(), image.properties, camera,
+        world.data_buffer.get(), world.properties);
     cuda::waitForCuda();
     ImageUtils::saveImage("test_basic_with_world.png", image);
 }

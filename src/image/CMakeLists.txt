@@ -9,3 +9,4 @@ target_include_directories(
   raytracer_image
   PUBLIC include
   PRIVATE ${OpenCV_INCLUDE_DIRS})
+set_property(TARGET raytracer_image PROPERTY CUDA_SEPARABLE_COMPILATION ON)

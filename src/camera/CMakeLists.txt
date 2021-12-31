@@ -1,0 +1,4 @@
+add_library(raytracer_camera INTERFACE)
+target_include_directories(raytracer_camera INTERFACE include)
+target_link_libraries(
+  raytracer_camera INTERFACE raytracer_common raytracer_vector3 raytracer_ray)

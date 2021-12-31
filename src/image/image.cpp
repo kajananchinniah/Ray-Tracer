@@ -1,5 +1,6 @@
 #include "image/image.hpp"
 #include "common/common_types.hpp"
+#include "image/cuda_image_utils.hpp"
 #include <iostream>
 
 namespace
@@ -55,8 +56,11 @@ ImageProperties::ImageProperties(s64 w, s64 h, ImageEncodings e)
 
 Image::Image(s64 w, s64 h, ImageEncodings e)
     : properties{w, h, e}, data_buffer{cuda::createCudaUniquePtrArray<u8>(
-                               properties.size())}
+                               properties.size())},
+      random_state{
+          cuda::createCudaUniquePtrArray<curandState>(properties.area())}
 {
+    cuda::initializeImageRandomState(random_state.get(), properties);
 }
 
 } // namespace RayTracer

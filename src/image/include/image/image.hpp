@@ -9,6 +9,7 @@
 
 #include "cuda.h"
 #include "cuda_runtime.h"
+#include "curand_kernel.h"
 
 #include "common/cuda_memory_utils.hpp"
 #include <iostream>
@@ -50,6 +51,11 @@ struct ImageProperties {
         return width * height * channels * sizeof(u8);
     }
 
+    __device__ __host__ u64 area() const
+    {
+        return width * height;
+    }
+
     /// @brief Calculates the pitch of the image
     ///
     /// @return The pitch of the image
@@ -75,6 +81,11 @@ struct ImageProperties {
     __device__ __host__ s64 flattenedIndex(s64 u, s64 v, s64 c) const
     {
         return v * pitch() + u * colourStep() + c;
+    }
+
+    __device__ __host__ s64 randomStateIndex(s64 u, s64 v) const
+    {
+        return v * width + u;
     }
 
     __device__ __host__ s64 redIndex(s64 u, s64 v) const
@@ -105,6 +116,9 @@ struct Image {
     /// A data buffer holding the pixels of an image
     std::unique_ptr<u8[], decltype(&cudaFree)> data_buffer{nullptr, cudaFree};
 
+    std::unique_ptr<curandState[], decltype(&cudaFree)> random_state{nullptr,
+                                                                     cudaFree};
+
     /// @brief Gets the element at (u, v, c) in the image
     ///
     /// @param u The u coordinate (e.g. along the width) of interest
@@ -131,6 +145,11 @@ struct Image {
         return data_buffer[properties.blueIndex(u, v)];
     }
 
+    __host__ curandState &atRandomState(s64 u, s64 v)
+    {
+        return random_state[properties.randomStateIndex(u, v)];
+    }
+
     /// @brief Gets the element at (u, v, c) in the image
     ///
     /// @param u The u coordinate (e.g. along the width) of interest
@@ -155,6 +174,11 @@ struct Image {
     __host__ const u8 &atBlue(s64 u, s64 v) const
     {
         return data_buffer[properties.blueIndex(u, v)];
+    }
+
+    __host__ const curandState &atRandomState(s64 u, s64 v) const
+    {
+        return random_state[properties.randomStateIndex(u, v)];
     }
 
     __host__ void writeColourAt(Colour colour, s64 u, s64 v)
