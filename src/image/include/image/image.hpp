@@ -97,11 +97,7 @@ struct ImageProperties {
 // buffer. Note, when using with cuda, use access the pointers raw memory.
 /// Also, pass in the properties member as another argument.
 struct Image {
-    Image(s64 w, s64 h, ImageEncodings e = ImageEncodings::kBGR8)
-        : properties{w, h, e}, data_buffer{cuda::createCudaUniquePtrArray<u8>(
-                                   properties.size())}
-    {
-    }
+    Image(s64 w, s64 h, ImageEncodings e = ImageEncodings::kBGR8);
 
     /// Holds relevant image properties
     const ImageProperties properties;

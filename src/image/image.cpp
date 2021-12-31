@@ -53,4 +53,10 @@ ImageProperties::ImageProperties(s64 w, s64 h, ImageEncodings e)
 {
 }
 
+Image::Image(s64 w, s64 h, ImageEncodings e)
+    : properties{w, h, e}, data_buffer{cuda::createCudaUniquePtrArray<u8>(
+                               properties.size())}
+{
+}
+
 } // namespace RayTracer
