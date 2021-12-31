@@ -107,6 +107,20 @@ TEST(Render, BasicRenderWithSphere)
     ImageUtils::saveImage("test_basic_with_sphere.png", image);
 }
 
+TEST(Render, BasicRenderWithWorld)
+{
+    Image image{kImageWidth, kImageHeight};
+    SphereArray world{2};
+    ASSERT_TRUE(world.add(Sphere{Point3f(0.0f, 0.0f, -1.0f), 0.5f}));
+    ASSERT_TRUE(world.add(Sphere{Point3f(0.0f, -100.5f, -1.0f), 100.0f}));
+    cuda::prefetchToGpu(image.data_buffer.get(), image.properties.size());
+    testRenderBasicRenderWithWorld<<<kBlocks, kThreads>>>(
+        image.data_buffer.get(), image.properties, kOrigin, kLowerLeftCorner,
+        kHorizontal, kVertical, world.data_buffer.get(), world.properties);
+    cuda::waitForCuda();
+    ImageUtils::saveImage("test_basic_with_world.png", image);
+}
+
 } // namespace RayTracer
 
 int main(int argc, char **argv)

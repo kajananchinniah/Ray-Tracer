@@ -1,6 +1,9 @@
 #include "common/common_types.hpp"
 #include "image/image.hpp"
 #include "ray/ray.hpp"
+#include "surface/cuda_sphere_array_utils.hpp"
+#include "surface/sphere.hpp"
+#include "surface/sphere_array.hpp"
 #include "vector3/vector3.hpp"
 
 #include "cuda.h"
@@ -82,6 +85,30 @@ testBasicRenderWithSphereCuda(u8 *image_buffer, ImageProperties properties,
                                 scaled_v * vertical - origin};
             Colour colour = cuda::getRayColourWithRedSphere(ray);
             cuda::writeColourAt(image_buffer, properties, colour, u, v);
+        }
+    }
+}
+
+__global__ void testRenderBasicRenderWithWorld(
+    u8 *image_buffer, ImageProperties image_properties, Point3f origin,
+    Vector3f lower_left_corner, Vector3f horizontal, Vector3f vertical,
+    Sphere *sphere_array, SphereArrayProperties sphere_array_properties)
+{
+    u64 u_idx = blockIdx.x * blockDim.x + threadIdx.x;
+    u64 u_stride = gridDim.x * blockDim.x;
+
+    u64 v_idx = blockIdx.y * blockDim.y + threadIdx.y;
+    u64 v_stride = gridDim.y * blockDim.y;
+
+    for (u64 v = v_idx; v < image_properties.height; v += v_stride) {
+        for (u64 u = u_idx; u < image_properties.width; u += u_stride) {
+            f32 scaled_u{scaleUCoordinate(u, image_properties.width)};
+            f32 scaled_v{scaleVCoordinate(v, image_properties.height)};
+            Ray ray{origin, lower_left_corner + scaled_u * horizontal +
+                                scaled_v * vertical - origin};
+            Colour colour = cuda::getRayColourWithSphereArray(
+                ray, sphere_array, sphere_array_properties);
+            cuda::writeColourAt(image_buffer, image_properties, colour, u, v);
         }
     }
 }

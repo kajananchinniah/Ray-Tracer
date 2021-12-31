@@ -1,10 +1,15 @@
 #ifndef RAY_TRACER_RAY_CUDA_RAY_UTILS_HPP_
 #define RAY_TRACER_RAY_CUDA_RAY_UTILS_HPP_
 
+#include "common/common_constants.hpp"
 #include "common/common_types.hpp"
 #include "cuda.h"
 #include "cuda_runtime.h"
 #include "ray.hpp"
+#include "surface/cuda_sphere_array_utils.hpp"
+#include "surface/hit_record.hpp"
+#include "surface/sphere.hpp"
+#include "surface/sphere_array.hpp"
 #include "vector3/vector3.hpp"
 
 namespace RayTracer
@@ -42,6 +47,21 @@ __device__ Colour getRayColourWithRedSphere(const Ray &ray)
     } else {
         return getRayColour(ray);
     }
+}
+
+__device__ Colour
+getRayColourWithSphereArray(const Ray &ray, Sphere *sphere_array,
+                            SphereArrayProperties sphere_array_properties)
+{
+    HitRecord record;
+    if (hitSphereArray(sphere_array, sphere_array_properties, ray, 0, infinity,
+                       record)) {
+        return 0.5f * (record.normal + Colour{1.0f, 1.0f, 1.0f});
+    }
+
+    Vector3f unit_direction = normalize_device(ray.direction());
+    f32 t = 0.5f * (unit_direction.y() + 1.0f);
+    return (1.0f - t) * Colour{1.0f, 1.0f, 1.0f} + t * Colour{0.5f, 0.7f, 1.0f};
 }
 
 } // namespace cuda
