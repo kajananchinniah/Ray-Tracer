@@ -46,13 +46,6 @@ __device__ Colour getRayColourWithRedSphere(const Ray &ray)
 
 } // namespace cuda
 
-__host__ Colour getRayColour(const Ray &ray)
-{
-    Vector3f unit_direction = normalize_host(ray.direction());
-    f32 t = 0.5f * (unit_direction.y() + 1.0f);
-    return (1.0f - t) * Colour{1.0f, 1.0f, 1.0f} + t * Colour{0.5f, 0.7f, 1.0f};
-}
-
 } // namespace RayTracer
 
 #endif // RAY_TRACER_RAY_CUDA_RAY_UTILS_HPP_
