@@ -96,7 +96,12 @@ TEST(Render, BasicRenderWithSphere)
     testBasicRenderWithSphereCuda<<<kBlocks, kThreads>>>(
         image.data_buffer.get(), image.properties, camera);
     cuda::waitForCuda();
-    ImageUtils::saveImage("test_basic_with_sphere.png", image);
+    std::string file_path =
+        g_base_absolute_path + "/test_basic_render_with_sphere.png";
+    auto maybe_image = ImageUtils::readImage(file_path.c_str());
+    EXPECT_TRUE(maybe_image);
+    const auto &ground_truth = maybe_image.value();
+    checkIfImagesAreEqual(image, ground_truth);
 }
 
 TEST(Render, BasicRenderWithWorld)
@@ -111,7 +116,12 @@ TEST(Render, BasicRenderWithWorld)
         image.data_buffer.get(), image.properties, camera,
         world.data_buffer.get(), world.properties);
     cuda::waitForCuda();
-    ImageUtils::saveImage("test_basic_with_world.png", image);
+    std::string file_path =
+        g_base_absolute_path + "/test_basic_render_with_world.png";
+    auto maybe_image = ImageUtils::readImage(file_path.c_str());
+    EXPECT_TRUE(maybe_image);
+    const auto &ground_truth = maybe_image.value();
+    checkIfImagesAreEqual(image, ground_truth);
 }
 
 TEST(Render, BasicRenderWithAntiAliasing)
@@ -127,7 +137,7 @@ TEST(Render, BasicRenderWithAntiAliasing)
         world.data_buffer.get(), world.properties, image.random_state.get(),
         100);
     cuda::waitForCuda();
-    ImageUtils::saveImage("test_basic_with_antialiasing.png", image);
+    ImageUtils::saveImage("test_basic_render_with_antialiasing.png", image);
 }
 
 } // namespace RayTracer
