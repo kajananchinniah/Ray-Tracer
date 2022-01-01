@@ -70,6 +70,28 @@ __device__ void writeColourAt(u8 *image_buffer,
         static_cast<u8>(256 * clamp(blue, 0.0, 0.999));
 }
 
+__device__ void writeGammaCorrectedColourAt(u8 *image_buffer,
+                                            const ImageProperties &properties,
+                                            const Colour &colour, s64 u, s64 v,
+                                            int samples_per_pixel)
+{
+    f32 red = colour.x();
+    f32 green = colour.y();
+    f32 blue = colour.z();
+
+    f32 scale = 1.0 / samples_per_pixel;
+    red = sqrt(red * scale);
+    green = sqrt(green * scale);
+    blue = sqrt(blue * scale);
+
+    image_buffer[properties.redIndex(u, v)] =
+        static_cast<u8>(256 * clamp(red, 0.0, 0.999));
+    image_buffer[properties.greenIndex(u, v)] =
+        static_cast<u8>(256 * clamp(green, 0.0, 0.999));
+    image_buffer[properties.blueIndex(u, v)] =
+        static_cast<u8>(256 * clamp(blue, 0.0, 0.999));
+}
+
 void initializeImageRandomState(curandState *random_state,
                                 const ImageProperties &properties)
 {

@@ -10,6 +10,7 @@
 #include "surface/hit_record.hpp"
 #include "surface/sphere.hpp"
 #include "surface/sphere_array.hpp"
+#include "vector3/cuda_vector3_utils.hpp"
 #include "vector3/vector3.hpp"
 
 namespace RayTracer
@@ -31,7 +32,7 @@ __device__ f32 hitSphere(const Point3f &center, f32 radius, const Ray &ray)
         return (-b_over_2 - sqrt(discriminant)) / a;
     }
 }
-__device__ Colour getRayColour(const Ray &ray)
+__device__ Colour getRayColourBasic(const Ray &ray)
 {
     Vector3f unit_direction = normalize_device(ray.direction());
     f32 t = 0.5f * (unit_direction.y() + 1.0f);
@@ -45,7 +46,7 @@ __device__ Colour getRayColourWithRedSphere(const Ray &ray)
         Vector3f N = normalize_device(ray.at(t) - Vector3f{0.0f, 0.0f, -1.0f});
         return 0.5f * Colour{N.x() + 1.0f, N.y() + 1.0f, N.z() + 1.0f};
     } else {
-        return getRayColour(ray);
+        return getRayColourBasic(ray);
     }
 }
 
@@ -64,6 +65,29 @@ getRayColourWithSphereArray(const Ray &ray, Sphere *sphere_array,
     return (1.0f - t) * Colour{1.0f, 1.0f, 1.0f} + t * Colour{0.5f, 0.7f, 1.0f};
 }
 
+__device__ Colour
+getRayColourWithDiffuse(const Ray &ray, Sphere *sphere_array,
+                        SphereArrayProperties sphere_array_properties,
+                        s64 max_depth, curandState &random_state)
+{
+    Ray current_ray = ray;
+    Colour current_colour{1.0f, 1.0f, 1.0f};
+    while (max_depth > 0) {
+        HitRecord record;
+
+        if (hitSphereArray(sphere_array, sphere_array_properties, current_ray,
+                           0.001f, infinity, record)) {
+            Point3f target{record.point + record.normal +
+                           randomUnitVector(random_state)};
+            current_ray = Ray(record.point, target - record.point);
+            current_colour = current_colour * 0.5f;
+        } else {
+            return getRayColourBasic(current_ray) * current_colour;
+        }
+        max_depth--;
+    }
+    return Colour{0.0f, 0.0f, 0.0f};
+}
 } // namespace cuda
 
 } // namespace RayTracer

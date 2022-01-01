@@ -18,6 +18,11 @@ __device__ void writeColourAt(u8 *image_buffer,
                               const Colour &colour, s64 u, s64 v,
                               int samples_per_pixel = 1);
 
+__device__ void writeGammaCorrectedColourAt(u8 *image_buffer,
+                                            const ImageProperties &properties,
+                                            const Colour &colour, s64 u, s64 v,
+                                            int samples_per_pixel = 1);
+
 void initializeImageRandomState(curandState *random_state,
                                 const ImageProperties &properties);
 } // namespace cuda

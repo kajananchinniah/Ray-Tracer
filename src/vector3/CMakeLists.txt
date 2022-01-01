@@ -1,3 +1,4 @@
-add_library(raytracer_vector3 INTERFACE)
-target_include_directories(raytracer_vector3 INTERFACE include)
-target_link_libraries(raytracer_vector3 INTERFACE raytracer_common)
+add_library(raytracer_vector3 cuda_vector3_utils.cu)
+target_include_directories(raytracer_vector3 PUBLIC include)
+target_link_libraries(raytracer_vector3 PUBLIC raytracer_common)
+set_property(TARGET raytracer_vector3 PROPERTY CUDA_SEPARABLE_COMPILATION ON)
