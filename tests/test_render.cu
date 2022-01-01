@@ -160,7 +160,8 @@ TEST(Render, BasicRenderWithDiffuse)
     EXPECT_TRUE(maybe_image);
     const auto &ground_truth = maybe_image.value();
     ImageUtils::saveImage("test_basic_with_diffuse.png", image);
-    // TODO: figure out why the error is large despite visually looking the same
+    // TODO: verify that randomness is the cause for high failure (seems to be
+    // the case)
     checkIfImagesAreEqual(image, ground_truth, 25);
 }
 
