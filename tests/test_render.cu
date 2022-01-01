@@ -114,6 +114,22 @@ TEST(Render, BasicRenderWithWorld)
     ImageUtils::saveImage("test_basic_with_world.png", image);
 }
 
+TEST(Render, BasicRenderWithAntiAliasing)
+{
+    Image image{kImageWidth, kImageHeight};
+    Camera camera;
+    SphereArray world{2};
+    ASSERT_TRUE(world.add(Sphere{Point3f(0.0f, 0.0f, -1.0f), 0.5f}));
+    ASSERT_TRUE(world.add(Sphere{Point3f(0.0f, -100.5f, -1.0f), 100.0f}));
+    cuda::prefetchToGpu(image.data_buffer.get(), image.properties.size());
+    testRenderBasicWithAntiAliasing<<<kBlocks, kThreads>>>(
+        image.data_buffer.get(), image.properties, camera,
+        world.data_buffer.get(), world.properties, image.random_state.get(),
+        100);
+    cuda::waitForCuda();
+    ImageUtils::saveImage("test_basic_with_antialiasing.png", image);
+}
+
 } // namespace RayTracer
 
 int main(int argc, char **argv)

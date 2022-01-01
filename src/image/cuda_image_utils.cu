@@ -30,6 +30,17 @@ __global__ void initializeImageRandomStateCuda(curandState *random_state,
     }
 }
 
+__device__ inline f32 clamp(f32 value, f32 min, f32 max)
+{
+    if (value < min) {
+        return min;
+    }
+    if (value > max) {
+        return max;
+    }
+    return value;
+}
+
 } // namespace
 
 namespace RayTracer
@@ -39,14 +50,24 @@ namespace cuda
 
 __device__ void writeColourAt(u8 *image_buffer,
                               const ImageProperties &properties,
-                              const Colour &colour, s64 u, s64 v)
+                              const Colour &colour, s64 u, s64 v,
+                              int samples_per_pixel)
 {
+    f32 red = colour.x();
+    f32 green = colour.y();
+    f32 blue = colour.z();
+
+    f32 scale = 1.0 / samples_per_pixel;
+    red = red * scale;
+    green = green * scale;
+    blue = blue * scale;
+
     image_buffer[properties.redIndex(u, v)] =
-        static_cast<u8>(255.999 * colour.x());
+        static_cast<u8>(256 * clamp(red, 0.0, 0.999));
     image_buffer[properties.greenIndex(u, v)] =
-        static_cast<u8>(255.999 * colour.y());
+        static_cast<u8>(256 * clamp(green, 0.0, 0.999));
     image_buffer[properties.blueIndex(u, v)] =
-        static_cast<u8>(255.999 * colour.z());
+        static_cast<u8>(256 * clamp(blue, 0.0, 0.999));
 }
 
 void initializeImageRandomState(curandState *random_state,
