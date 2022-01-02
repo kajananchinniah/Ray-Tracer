@@ -25,19 +25,10 @@ bool saveImage(const char *filename, const Image &image)
         return false;
     }
 
-    cv::Mat output_image(image.properties.height, image.properties.width,
-                         CV_8UC3);
-
-    if (image.properties.size() !=
-        output_image.total() * output_image.elemSize()) {
-        std::cout << "Warning: image is not the correct size. Not saving\n";
-        return false;
-    }
-
     cuda::waitForCuda();
     cuda::prefetchToCpu(image.data_buffer.get(), image.properties.size());
-    cuda::copyCudaMemory(output_image.data, image.data_buffer.get(),
-                         image.properties.size());
+    cv::Mat output_image(image.properties.height, image.properties.width,
+                         CV_8UC3, image.data_buffer.get());
 
     return cv::imwrite(filename, output_image);
 }
