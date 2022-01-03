@@ -235,29 +235,52 @@ TEST(Render, BasicRenderWithDielectric)
 TEST(Render, BasicRenderWithAdjustableCamera)
 {
     Image image{kImageWidth, kImageHeight};
-    f32 R = std::cos(M_PI / 4);
-
-    Lambertian material_left{Colour{0.0f, 0.0f, 1.0f}};
-    Lambertian material_right{Colour{1.0f, 0.0f, 0.0f}};
-
-    SphereArray world{2};
-
-    world.add(Sphere{Point3f{-R, 0.0f, -1.0f}, R, Material{material_left}});
-    world.add(Sphere{Point3f{R, 0.0f, -1.0f}, R, Material{material_right}});
-
-    Camera camera{90.0f, kAspectRatio};
+    Camera camera{Point3f{-2.0f, 2.0f, 1.0f}, Point3f{0.0f, 0.0f, -1.0f},
+                  Vector3f{0.0f, 1.0f, 0.0f}, 90.0f, kAspectRatio};
+    SphereArray world{5};
+    Lambertian material_ground{Colour{0.8f, 0.8f, 0.0f}};
+    world.add(Sphere{Point3f{0.0f, -100.5f, -1.0f}, 100.0,
+                     Material{material_ground}});
+    Lambertian material_center{Colour{0.1f, 0.2f, 0.5f}};
+    world.add(
+        Sphere{Point3f{0.0f, 0.0f, -1.0f}, 0.5f, Material{material_center}});
+    Dielectric material_left{1.5f};
+    world.add(
+        Sphere{Point3f{-1.0f, 0.0f, -1.0f}, 0.5f, Material{material_left}});
+    world.add(
+        Sphere{Point3f{-1.0f, 0.0f, -1.0f}, -0.4f, Material{material_left}});
+    Metal material_right{Colour{0.8f, 0.6f, 0.2f}, 0.0f};
+    world.add(
+        Sphere{Point3f{1.0f, 0.0f, -1.0f}, 0.5f, Material{material_right}});
     cuda::prefetchToGpu(image.data_buffer.get(), image.properties.size());
     testRenderBasicWithMaterial<<<kBlocks, kThreads>>>(
         image.data_buffer.get(), image.properties, camera,
         world.data_buffer.get(), world.properties, image.random_state.get(),
         100, 50);
     cuda::waitForCuda();
-    std::string file_path =
-        g_base_absolute_path + "/test_basic_render_with_dieletric.png";
-    auto maybe_image = ImageUtils::readImage(file_path.c_str());
-    EXPECT_TRUE(maybe_image);
-    const auto &ground_truth = maybe_image.value();
-    ImageUtils::saveImage("test_basic_with_adjustable_camera.png", image);
+    std::string file_path = g_base_absolute_path +
+                            "/test_basic_render_with_adjustable_camera_far.png";
+    auto maybe_image_far = ImageUtils::readImage(file_path.c_str());
+    EXPECT_TRUE(maybe_image_far);
+    const auto &ground_truth_far = maybe_image_far.value();
+    ImageUtils::saveImage("test_basic_with_adjustable_camera_far.png", image);
+    checkIfImagesAreEqual(image, ground_truth_far);
+
+    camera = Camera{Point3f{-2.0f, 2.0f, 1.0f}, Point3f{0.0f, 0.0f, -1.0f},
+                    Vector3f{0.0f, 1.0f, 0.0f}, 20.0f, kAspectRatio};
+    cuda::prefetchToGpu(image.data_buffer.get(), image.properties.size());
+    testRenderBasicWithMaterial<<<kBlocks, kThreads>>>(
+        image.data_buffer.get(), image.properties, camera,
+        world.data_buffer.get(), world.properties, image.random_state.get(),
+        100, 50);
+    cuda::waitForCuda();
+    file_path = g_base_absolute_path +
+                "/test_basic_render_with_adjustable_camera_near.png";
+    auto maybe_image_near = ImageUtils::readImage(file_path.c_str());
+    EXPECT_TRUE(maybe_image_near);
+    const auto &ground_truth_near = maybe_image_near.value();
+    ImageUtils::saveImage("test_basic_with_adjustable_camera_near.png", image);
+    checkIfImagesAreEqual(image, ground_truth_near);
 }
 
 } // namespace RayTracer

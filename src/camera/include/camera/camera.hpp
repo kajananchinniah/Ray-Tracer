@@ -31,19 +31,22 @@ public:
                              Vector3f{0.0, 0.0, focal_length};
     }
 
-    __device__ __host__ Camera(f32 vertical_FOV, f32 aspect_ratio)
+    __host__ Camera(Point3f look_from, Point3f look_at, Vector3f v_up,
+                    f32 vertical_FOV, f32 aspect_ratio)
     {
         f32 theta = degreesToRadians(vertical_FOV);
         f32 h = std::tan(theta / 2);
         f32 viewport_height{2.0f * h};
         f32 viewport_width{aspect_ratio * viewport_height};
-        f32 focal_length{1.0f};
 
-        origin_ = Point3f{0.0, 0.0, 0.0};
-        horizontal_ = Vector3f{viewport_width, 0.0, 0.0};
-        vertical_ = Vector3f{0.0, viewport_height, 0.0};
-        lower_left_corner_ = origin_ - horizontal_ / 2.0 - vertical_ / 2.0 -
-                             Vector3f{0.0, 0.0, focal_length};
+        Vector3f w = normalize_host(look_from - look_at);
+        Vector3f u = normalize_host(cross(v_up, w));
+        Vector3f v = cross(w, u);
+
+        origin_ = look_from;
+        horizontal_ = viewport_width * u;
+        vertical_ = viewport_height * v;
+        lower_left_corner_ = origin_ - horizontal_ / 2.0 - vertical_ / 2.0 - w;
     }
 
     __device__ __host__ Ray getRay(f32 u_scaled, f32 v_scaled) const
