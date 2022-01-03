@@ -14,6 +14,7 @@ namespace cuda
 
 __device__ Vector3f randomInUnitSphere(curandState &random_state);
 __device__ Vector3f randomUnitVector(curandState &random_state);
+__device__ Vector3f randomInUnitDisk(curandState &random_state);
 
 } // namespace cuda
 } // namespace RayTracer

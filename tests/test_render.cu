@@ -283,6 +283,46 @@ TEST(Render, BasicRenderWithAdjustableCamera)
     checkIfImagesAreEqual(image, ground_truth_near);
 }
 
+TEST(Render, BasicRenderWithDefocusBlur)
+{
+    Image image{kImageWidth, kImageHeight};
+    Point3f look_from{3.0f, 3.0f, 2.0f};
+    Point3f look_at{0.0f, 0.0f, -1.0f};
+    Vector3f v_up{0.0f, 1.0f, 0.0f};
+    f32 dist_to_focus{(look_from - look_at).magnitude_host()};
+    f32 aperture{2.0f};
+    Camera camera{look_from,    look_at,  v_up,         20.0f,
+                  kAspectRatio, aperture, dist_to_focus};
+    SphereArray world{5};
+    Lambertian material_ground{Colour{0.8f, 0.8f, 0.0f}};
+    world.add(Sphere{Point3f{0.0f, -100.5f, -1.0f}, 100.0,
+                     Material{material_ground}});
+    Lambertian material_center{Colour{0.1f, 0.2f, 0.5f}};
+    world.add(
+        Sphere{Point3f{0.0f, 0.0f, -1.0f}, 0.5f, Material{material_center}});
+    Dielectric material_left{1.5f};
+    world.add(
+        Sphere{Point3f{-1.0f, 0.0f, -1.0f}, 0.5f, Material{material_left}});
+    world.add(
+        Sphere{Point3f{-1.0f, 0.0f, -1.0f}, -0.4f, Material{material_left}});
+    Metal material_right{Colour{0.8f, 0.6f, 0.2f}, 0.0f};
+    world.add(
+        Sphere{Point3f{1.0f, 0.0f, -1.0f}, 0.5f, Material{material_right}});
+    cuda::prefetchToGpu(image.data_buffer.get(), image.properties.size());
+    testRenderBasicWithDefocusBlur<<<kBlocks, kThreads>>>(
+        image.data_buffer.get(), image.properties, camera,
+        world.data_buffer.get(), world.properties, image.random_state.get(),
+        100, 50);
+    cuda::waitForCuda();
+    std::string file_path =
+        g_base_absolute_path + "/test_basic_render_with_defocus_blur.png";
+    auto maybe_image = ImageUtils::readImage(file_path.c_str());
+    EXPECT_TRUE(maybe_image);
+    const auto &ground_truth = maybe_image.value();
+    ImageUtils::saveImage("test_basic_with_defocus_blur.png", image);
+    checkIfImagesAreEqual(image, ground_truth);
+}
+
 } // namespace RayTracer
 
 int main(int argc, char **argv)

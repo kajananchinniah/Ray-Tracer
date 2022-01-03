@@ -26,7 +26,7 @@ __device__ Vector3f randomInUnitSphere(curandState &random_state)
         f32 x{changeRange(curand_uniform(&random_state), -1, 1)};
         f32 y{changeRange(curand_uniform(&random_state), -1, 1)};
         f32 z{changeRange(curand_uniform(&random_state), -1, 1)};
-        Vector3f rval = Vector3f{x, y, z};
+        Vector3f rval{x, y, z};
         if (rval.magnitude_squared() >= 1) {
             continue;
         }
@@ -38,6 +38,20 @@ __device__ Vector3f randomUnitVector(curandState &random_state)
 {
     return normalize_device(randomInUnitSphere(random_state));
 }
+
+__device__ Vector3f randomInUnitDisk(curandState &random_state)
+{
+    while (true) {
+        f32 x{changeRange(curand_uniform(&random_state), -1, 1)};
+        f32 y{changeRange(curand_uniform(&random_state), -1, 1)};
+        f32 z{0.0f};
+        Vector3f rval{x, y, z};
+        if (rval.magnitude_squared() >= 1) {
+            continue;
+        }
+        return rval;
+    }
+} // namespace cuda
 
 } // namespace cuda
 

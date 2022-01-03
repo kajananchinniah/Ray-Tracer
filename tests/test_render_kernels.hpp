@@ -216,4 +216,36 @@ __global__ void testRenderBasicWithMaterial(
     }
 }
 
+__global__ void testRenderBasicWithDefocusBlur(
+    u8 *image_buffer, ImageProperties image_properties, Camera camera,
+    Sphere *sphere_array, SphereArrayProperties sphere_array_properties,
+    curandState *random_state, s32 samples_per_pixel, s32 max_depth = 50)
+{
+    u64 u_idx = blockIdx.x * blockDim.x + threadIdx.x;
+    u64 u_stride = gridDim.x * blockDim.x;
+
+    u64 v_idx = blockIdx.y * blockDim.y + threadIdx.y;
+    u64 v_stride = gridDim.y * blockDim.y;
+
+    for (u64 v = v_idx; v < image_properties.height; v += v_stride) {
+        for (u64 u = u_idx; u < image_properties.width; u += u_stride) {
+            Colour colour{0.0, 0.0, 0.0};
+            curandState pixel_random_state =
+                random_state[image_properties.randomStateIndex(u, v)];
+            for (s32 s = 0; s < samples_per_pixel; ++s) {
+                f32 scaled_u{scaleUCoordinateRandomized(
+                    u, image_properties.width, pixel_random_state)};
+                f32 scaled_v{scaleVCoordinateRandomized(
+                    v, image_properties.height, pixel_random_state)};
+                Ray ray = camera.getRay(scaled_u, scaled_v, pixel_random_state);
+                colour += cuda::getRayColourWithMaterial(
+                    ray, sphere_array, sphere_array_properties, max_depth,
+                    pixel_random_state);
+            }
+            cuda::writeGammaCorrectedColourAt(image_buffer, image_properties,
+                                              colour, u, v, samples_per_pixel);
+        }
+    }
+}
+
 } // namespace RayTracer
