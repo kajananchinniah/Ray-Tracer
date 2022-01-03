@@ -1,6 +1,9 @@
 #ifndef RAY_TRACER_CAMERA_CAMERA_HPP_
 #define RAY_TRACER_CAMERA_CAMERA_HPP_
 
+#include <cmath>
+
+#include "common/common_functions.hpp"
 #include "common/common_types.hpp"
 #include "ray/ray.hpp"
 #include "vector3/vector3.hpp"
@@ -20,6 +23,21 @@ public:
         f32 viewport_height{2.0};
         f32 viewport_width{aspect_ratio * viewport_height};
         f32 focal_length{1.0};
+
+        origin_ = Point3f{0.0, 0.0, 0.0};
+        horizontal_ = Vector3f{viewport_width, 0.0, 0.0};
+        vertical_ = Vector3f{0.0, viewport_height, 0.0};
+        lower_left_corner_ = origin_ - horizontal_ / 2.0 - vertical_ / 2.0 -
+                             Vector3f{0.0, 0.0, focal_length};
+    }
+
+    __device__ __host__ Camera(f32 vertical_FOV, f32 aspect_ratio)
+    {
+        f32 theta = degreesToRadians(vertical_FOV);
+        f32 h = std::tan(theta / 2);
+        f32 viewport_height{2.0f * h};
+        f32 viewport_width{aspect_ratio * viewport_height};
+        f32 focal_length{1.0f};
 
         origin_ = Point3f{0.0, 0.0, 0.0};
         horizontal_ = Vector3f{viewport_width, 0.0, 0.0};

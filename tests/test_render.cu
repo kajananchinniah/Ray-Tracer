@@ -232,6 +232,34 @@ TEST(Render, BasicRenderWithDielectric)
     checkIfImagesAreEqual(image, ground_truth);
 }
 
+TEST(Render, BasicRenderWithAdjustableCamera)
+{
+    Image image{kImageWidth, kImageHeight};
+    f32 R = std::cos(M_PI / 4);
+
+    Lambertian material_left{Colour{0.0f, 0.0f, 1.0f}};
+    Lambertian material_right{Colour{1.0f, 0.0f, 0.0f}};
+
+    SphereArray world{2};
+
+    world.add(Sphere{Point3f{-R, 0.0f, -1.0f}, R, Material{material_left}});
+    world.add(Sphere{Point3f{R, 0.0f, -1.0f}, R, Material{material_right}});
+
+    Camera camera{90.0f, kAspectRatio};
+    cuda::prefetchToGpu(image.data_buffer.get(), image.properties.size());
+    testRenderBasicWithMaterial<<<kBlocks, kThreads>>>(
+        image.data_buffer.get(), image.properties, camera,
+        world.data_buffer.get(), world.properties, image.random_state.get(),
+        100, 50);
+    cuda::waitForCuda();
+    std::string file_path =
+        g_base_absolute_path + "/test_basic_render_with_dieletric.png";
+    auto maybe_image = ImageUtils::readImage(file_path.c_str());
+    EXPECT_TRUE(maybe_image);
+    const auto &ground_truth = maybe_image.value();
+    ImageUtils::saveImage("test_basic_with_adjustable_camera.png", image);
+}
+
 } // namespace RayTracer
 
 int main(int argc, char **argv)

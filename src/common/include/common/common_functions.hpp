@@ -12,7 +12,7 @@ namespace RayTracer
 
 __device__ __host__ inline f32 degreesToRadians(f32 degrees)
 {
-    return degrees * pi / 180.0f;
+    return degrees * (3.1415926535897932385f / 180.0f);
 }
 } // namespace RayTracer
 

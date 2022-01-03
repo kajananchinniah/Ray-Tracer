@@ -9,9 +9,11 @@
 namespace RayTracer
 {
 
+namespace cuda
+{
 __constant__ f32 infinity = std::numeric_limits<f32>::infinity();
-__constant__ f32 pi = 3.1415926535897932385f;
 
+} // namespace cuda
 } // namespace RayTracer
 
 #endif // RAY_TRACER_COMMON_COMMON_CONSTANTS_HPP_
