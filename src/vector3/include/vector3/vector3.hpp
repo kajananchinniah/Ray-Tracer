@@ -120,6 +120,20 @@ public:
         z_ = z_ / length;
     }
 
+    __host__ bool nearZero_host() const
+    {
+        const f32 s{1e-8};
+        return (std::fabs(x_) < s) && (std::fabs(y_) < s) &&
+               (std::fabs(z_) < s);
+    }
+
+    __device__ bool nearZero_device() const
+    {
+
+        const f32 s{1e-8};
+        return (fabsf(x_) < s) && (fabsf(y_) < s) && (fabsf(z_) < s);
+    }
+
 private:
     f32 x_;
     f32 y_;
@@ -189,6 +203,12 @@ __device__ inline Vector3f normalize_device(const Vector3f &vec)
 __host__ inline Vector3f normalize_host(const Vector3f &vec)
 {
     return vec / vec.magnitude_host();
+}
+
+__device__ __host__ inline Vector3f reflect(const Vector3f &left,
+                                            const Vector3f &right)
+{
+    return left - 2 * dot(left, right) * right;
 }
 
 using Colour = Vector3f;

@@ -88,6 +88,36 @@ getRayColourWithDiffuse(const Ray &ray, Sphere *sphere_array,
     }
     return Colour{0.0f, 0.0f, 0.0f};
 }
+
+__device__ Colour
+getRayColourWithMaterial(const Ray &ray, Sphere *sphere_array,
+                         SphereArrayProperties sphere_array_properties,
+                         s64 max_depth, curandState &random_state)
+{
+    Ray current_ray = ray;
+    Colour current_attenuation{1.0f, 1.0f, 1.0f};
+    while (max_depth > 0) {
+        HitRecord record;
+
+        if (hitSphereArray(sphere_array, sphere_array_properties, current_ray,
+                           0.001f, infinity, record)) {
+            Ray scattered_ray;
+            Colour attenuation;
+            if (record.material.scatter(current_ray, record, attenuation,
+                                        scattered_ray, random_state)) {
+                current_attenuation = current_attenuation * attenuation;
+                current_ray = scattered_ray;
+            } else {
+                return Colour{0.0f, 0.0f, 0.0f};
+            }
+        } else {
+            return getRayColourBasic(current_ray) * current_attenuation;
+        }
+        max_depth--;
+    }
+    return Colour{0.0f, 0.0f, 0.0f};
+}
+
 } // namespace cuda
 
 } // namespace RayTracer

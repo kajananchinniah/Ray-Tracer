@@ -6,6 +6,7 @@
 #include "image/cuda_image_utils.hpp"
 #include "image/image.hpp"
 #include "image/image_utils.hpp"
+#include "material/material.hpp"
 #include "ray/ray.hpp"
 #include "ray/ray_utils.hpp"
 #include "vector3/vector3.hpp"
@@ -162,6 +163,38 @@ TEST(Render, BasicRenderWithDiffuse)
     ImageUtils::saveImage("test_basic_with_diffuse.png", image);
     // TODO: verify that randomness is the cause for high failure (seems to be
     // the case)
+    checkIfImagesAreEqual(image, ground_truth, 25);
+}
+
+TEST(Render, BasicRenderWithMaterial)
+{
+    Image image{kImageWidth, kImageHeight};
+    Camera camera;
+    SphereArray world{4};
+    Lambertian material_ground{Colour{0.8f, 0.8f, 0.0f}};
+    world.add(Sphere{Point3f{0.0f, -100.5f, -1.0f}, 100.0,
+                     Material{material_ground}});
+    Lambertian material_center{Colour{0.7f, 0.3f, 0.3f}};
+    world.add(
+        Sphere{Point3f{0.0f, 0.0f, -1.0f}, 0.5f, Material{material_center}});
+    Metal material_left{Colour{0.8f, 0.8f, 0.8f}, 0.3f};
+    world.add(
+        Sphere{Point3f{-1.0f, 0.0f, -1.0f}, 0.5f, Material{material_left}});
+    Metal material_right{Colour{0.8f, 0.6f, 0.2f}, 1.0f};
+    world.add(
+        Sphere{Point3f{1.0f, 0.0f, -1.0f}, 0.5f, Material{material_right}});
+    cuda::prefetchToGpu(image.data_buffer.get(), image.properties.size());
+    testRenderBasicWithMaterial<<<kBlocks, kThreads>>>(
+        image.data_buffer.get(), image.properties, camera,
+        world.data_buffer.get(), world.properties, image.random_state.get(),
+        100, 50);
+    cuda::waitForCuda();
+    std::string file_path =
+        g_base_absolute_path + "/test_basic_render_with_material.png";
+    auto maybe_image = ImageUtils::readImage(file_path.c_str());
+    EXPECT_TRUE(maybe_image);
+    const auto &ground_truth = maybe_image.value();
+    ImageUtils::saveImage("test_basic_with_metal.png", image);
     checkIfImagesAreEqual(image, ground_truth, 25);
 }
 

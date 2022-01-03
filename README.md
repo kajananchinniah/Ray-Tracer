@@ -14,4 +14,9 @@ Dependencies:
 Tested on:
 - GPU: GeForce GTX 1050M
 
+Note about the tests:
+- Changed to testing to ensure behavior of my images don't change with additions
+  rather than testing against website due to randomness. I instead made sure
+  they looked visually similar.
+
 Reference: https://raytracing.github.io/books/RayTracingInOneWeekend.html

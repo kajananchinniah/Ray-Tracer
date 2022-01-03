@@ -28,6 +28,7 @@ __device__ __host__ bool Sphere::hit(const Ray &ray, f32 t_min, f32 t_max,
     record.point = ray.at(record.t);
     Vector3f outward_normal = (record.point - center_) / radius_;
     record.setFaceNormal(ray, outward_normal);
+    record.material = material_;
     return true;
 }
 

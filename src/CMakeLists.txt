@@ -1,6 +1,7 @@
 add_subdirectory(common)
 add_subdirectory(vector3)
 add_subdirectory(ray)
+add_subdirectory(material)
 add_subdirectory(surface)
 add_subdirectory(camera)
 add_subdirectory(image)

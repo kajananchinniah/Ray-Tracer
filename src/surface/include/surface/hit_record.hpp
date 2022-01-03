@@ -2,6 +2,7 @@
 #define RAY_TRACER_SURFACE_HITTABLE_HPP_
 
 #include "common/common_types.hpp"
+#include "material/material.hpp"
 #include "ray/ray.hpp"
 #include "vector3/vector3.hpp"
 
@@ -12,6 +13,7 @@ struct HitRecord {
     Point3f point{};
     Vector3f normal{};
     f32 t{};
+    Material material{};
     bool front_face{};
 
     __device__ __host__ inline void

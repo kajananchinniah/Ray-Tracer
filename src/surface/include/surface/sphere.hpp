@@ -3,6 +3,7 @@
 
 #include "common/common_types.hpp"
 #include "hit_record.hpp"
+#include "material/material.hpp"
 #include "ray/ray.hpp"
 #include "vector3/vector3.hpp"
 
@@ -23,12 +24,18 @@ public:
     {
     }
 
+    __device__ __host__ Sphere(Point3f center, f32 radius, Material material)
+        : center_{center}, radius_{radius}, material_{material}
+    {
+    }
+
     __device__ __host__ bool hit(const Ray &ray, f32 t_min, f32 t_max,
                                  HitRecord &record) const;
 
 private:
     Point3f center_;
     f32 radius_;
+    Material material_;
 };
 } // namespace RayTracer
 
