@@ -195,7 +195,41 @@ TEST(Render, BasicRenderWithMaterial)
     EXPECT_TRUE(maybe_image);
     const auto &ground_truth = maybe_image.value();
     ImageUtils::saveImage("test_basic_with_metal.png", image);
-    checkIfImagesAreEqual(image, ground_truth, 25);
+    checkIfImagesAreEqual(image, ground_truth);
+}
+
+TEST(Render, BasicRenderWithDielectric)
+{
+    Image image{kImageWidth, kImageHeight};
+    Camera camera;
+    SphereArray world{5};
+    Lambertian material_ground{Colour{0.8f, 0.8f, 0.0f}};
+    world.add(Sphere{Point3f{0.0f, -100.5f, -1.0f}, 100.0,
+                     Material{material_ground}});
+    Lambertian material_center{Colour{0.1f, 0.2f, 0.5f}};
+    world.add(
+        Sphere{Point3f{0.0f, 0.0f, -1.0f}, 0.5f, Material{material_center}});
+    Dielectric material_left{1.5f};
+    world.add(
+        Sphere{Point3f{-1.0f, 0.0f, -1.0f}, 0.5f, Material{material_left}});
+    world.add(
+        Sphere{Point3f{-1.0f, 0.0f, -1.0f}, -0.4f, Material{material_left}});
+    Metal material_right{Colour{0.8f, 0.6f, 0.2f}, 0.0f};
+    world.add(
+        Sphere{Point3f{1.0f, 0.0f, -1.0f}, 0.5f, Material{material_right}});
+    cuda::prefetchToGpu(image.data_buffer.get(), image.properties.size());
+    testRenderBasicWithMaterial<<<kBlocks, kThreads>>>(
+        image.data_buffer.get(), image.properties, camera,
+        world.data_buffer.get(), world.properties, image.random_state.get(),
+        100, 50);
+    cuda::waitForCuda();
+    std::string file_path =
+        g_base_absolute_path + "/test_basic_render_with_dieletric.png";
+    auto maybe_image = ImageUtils::readImage(file_path.c_str());
+    EXPECT_TRUE(maybe_image);
+    const auto &ground_truth = maybe_image.value();
+    ImageUtils::saveImage("test_basic_with_dielectric.png", image);
+    checkIfImagesAreEqual(image, ground_truth);
 }
 
 } // namespace RayTracer

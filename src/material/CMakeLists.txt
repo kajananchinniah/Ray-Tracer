@@ -1,4 +1,4 @@
-add_library(raytracer_material lambertian.cu metal.cu)
+add_library(raytracer_material lambertian.cu metal.cu dielectric.cu)
 target_include_directories(raytracer_material PUBLIC include)
 target_link_libraries(
   raytracer_material

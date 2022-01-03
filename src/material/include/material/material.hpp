@@ -1,6 +1,7 @@
 #ifndef RAY_TRACER_MATERIAL_MATERIAL_HPP_
 #define RAY_TRACER_MATERIAL_MATERIAL_HPP_
 
+#include "material/dielectric.hpp"
 #include "material/lambertian.hpp"
 #include "material/metal.hpp"
 #include "ray/ray.hpp"
@@ -34,6 +35,12 @@ public:
         material_.data.metal = material;
     }
 
+    __device__ __host__ explicit Material(Dielectric material)
+    {
+        material_.type = MaterialTypes::kDielectric;
+        material_.data.dielectric = material;
+    }
+
     __device__ bool scatter(const Ray &input_ray, const HitRecord &record,
                             Colour &attenuation, Ray &scattered_ray,
                             curandState &random_state) const
@@ -45,16 +52,20 @@ public:
         case MaterialTypes::kMetal:
             return material_.data.metal.scatter(input_ray, record, attenuation,
                                                 scattered_ray, random_state);
+        case MaterialTypes::kDielectric:
+            return material_.data.dielectric.scatter(
+                input_ray, record, attenuation, scattered_ray, random_state);
         }
         return false;
     }
 
 private:
     struct MaterialTypes {
-        enum { kLambertian, kMetal } type;
+        enum { kLambertian, kMetal, kDielectric } type;
         union Materials {
             Lambertian lambertian;
             Metal metal;
+            Dielectric dielectric;
             __device__ __host__ Materials()
             {
             }

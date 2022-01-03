@@ -211,6 +211,18 @@ __device__ __host__ inline Vector3f reflect(const Vector3f &left,
     return left - 2 * dot(left, right) * right;
 }
 
+__device__ inline Vector3f refract_device(const Vector3f &left,
+                                          const Vector3f &right,
+                                          f32 index_of_refraction_ratio)
+{
+    f32 cos_theta = fminf(dot(-left, right), 1.0f);
+    Vector3f r_out_perp =
+        index_of_refraction_ratio * (left + cos_theta * right);
+    Vector3f r_out_parallel =
+        -sqrt(fabsf(1.0f - r_out_perp.magnitude_squared())) * right;
+    return r_out_perp + r_out_parallel;
+}
+
 using Colour = Vector3f;
 using Point3f = Vector3f;
 
