@@ -11,7 +11,7 @@ namespace RayTracer
 
 namespace cuda
 {
-__constant__ f32 infinity = std::numeric_limits<f32>::infinity();
+constexpr f32 infinity = std::numeric_limits<f32>::infinity();
 
 } // namespace cuda
 } // namespace RayTracer

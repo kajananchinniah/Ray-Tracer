@@ -1,4 +1,5 @@
-add_library(raytracer_ray INTERFACE)
-target_include_directories(raytracer_ray INTERFACE include)
-target_link_libraries(
-  raytracer_ray INTERFACE raytracer_common raytracer_vector3 raytracer_surface)
+add_library(raytracer_ray ray_utils.cu)
+target_include_directories(raytracer_ray PUBLIC include)
+target_link_libraries(raytracer_ray PUBLIC raytracer_common raytracer_vector3
+                                           raytracer_surface)
+set_property(TARGET raytracer_ray PROPERTY CUDA_SEPARABLE_COMPILATION ON)
