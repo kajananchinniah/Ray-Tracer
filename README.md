@@ -45,11 +45,12 @@ consider the time it took to generate a random state. I did this to make it a
 more fair comparison with my implementation. If I didn't make this change, I
 would have gotten ~11.6 s.
 
-Similarly, I tested the original CPU implementation as well. I added a similar
+Similarly, I tested the original CPU implementation (https://github.com/RayTracing/raytracing.github.io) as well. I added a similar
 method of timekeeping that I use to record how long it took. Similar to the
 above two, it only considers the time to render objects. It took ~549967696 µs
 (550 s). I have a fairly weak CPU so this is reasonable I guess (and I had
-things running in the background).
+things running in the background), but I might investigate later why this
+happened (it's slower than I expected).
 
 Overall, my implementation ended up being the fastest. This makes sense because
 I render the final image on GPU and avoid a few potential performance hitting
@@ -61,6 +62,19 @@ if I wanted) and scaling the surfaces. I could employ a similar strategy to what
 The CUDA article also notes on his personal machine, the CPU version took about
 90 s, and his implementation took about 6.7 s (GTX 1070) and 4.7 s (RTX 2080).
 This is faster than what I reported for both.
+
+## Summary of Performance
+
+Once again, these results are for `samples_per_pixel` at 10 and `max_depth` at 50.
+
+Implementation              | Time (s)
+----------------------------|---------
+Mine (my machine)           | 7.93 s
+CUDA article (my machine)   | 10.3 s
+CPU (my machine)            | 550 s
+GTX 1070 (article machine)  | 6.7 s
+RTX 2080 (article machine)  | 4.7 s
+CPU (article machine)       | 90 s
 
 ## Note about the tests
 - Changed to testing to ensure behavior of my images don't change with additions
