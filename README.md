@@ -3,6 +3,10 @@ Code is heavily inspired / taken at parts from the tutorial:
 https://raytracing.github.io/books/RayTracingInOneWeekend.html but cuda
 accelerated (although there are a few notable differences, such as how images are treated, lack of polymorphism in my code, etc)
 
+Note: I probably stil don't know a lot about raytracing. I was mainly trying to CUDA
+accelerate a known program, not learn about raytracing, so I didn't focus on
+learning the concepts too much.
+
 ## Screenshots:
 <p align="center">
   <img src="resources/waiting_forever.png"/>
@@ -18,10 +22,13 @@ The second image's performance is mentioned in the performance section. It
 didn't take long but visually is worse.
 
 ## Dependencies
-- CUDA + NVCC compiler
+- CUDA + NVCC compiler (requires CUDA compatible card)
 - OpenCV (only for image I/O)
 - Doxygen (documentation)
 - Gtest (tests)
+
+For installation, I'd recommend looking online to do it (I'll post instructions
+later if I get to it).
 
 ## Building
 To compile:
@@ -31,6 +38,9 @@ cd build
 cmake ..
 make
 ```
+This will generate an executable at the root of build called `ray_tracing` which
+you can use to generate the two images. If you would like to use a custom scene,
+I think that `src/main.cu` gives a good enough example of how to do so.
 
 If you want to build the tests, use
 ```
