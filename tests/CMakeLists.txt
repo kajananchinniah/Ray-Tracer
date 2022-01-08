@@ -6,7 +6,7 @@ set(CMAKE_CXX_CLANG_TIDY "")
 set(COMMON_TEST_LIBRARIES ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} pthread)
 
 # Image Utils
-add_executable(test_image_utils test_image_utils.cpp)
+add_executable(test_image_utils test_image_utils.cu)
 target_include_directories(test_image_utils PRIVATE ${GTEST_INCLUDE_DIRS})
 target_link_libraries(test_image_utils PRIVATE ${COMMON_TEST_LIBRARIES}
                                                raytracer_common raytracer_image)
@@ -14,7 +14,7 @@ add_test(TestImageUtils test_image_utils
          ${CMAKE_CURRENT_LIST_DIR}/test_resources/123456.png)
 
 # Vector3
-add_executable(test_vector3 test_vector3.cpp)
+add_executable(test_vector3 test_vector3.cu)
 target_include_directories(test_vector3 PRIVATE ${GTEST_INCLUDE_DIRS})
 target_link_libraries(test_vector3 PRIVATE ${COMMON_TEST_LIBRARIES}
                                            raytracer_common raytracer_vector3)

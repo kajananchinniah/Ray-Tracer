@@ -1,2 +1,2 @@
-add_library(raytracer_common cuda_memory_utils.cpp)
+add_library(raytracer_common cuda_memory_utils.cu)
 target_include_directories(raytracer_common PUBLIC include)
