@@ -1,3 +1,5 @@
+/// @file common_constants.hpp
+/// @brief Contains useful constants
 #ifndef RAY_TRACER_COMMON_COMMON_CONSTANTS_HPP_
 #define RAY_TRACER_COMMON_COMMON_CONSTANTS_HPP_
 
@@ -11,6 +13,7 @@ namespace RayTracer
 
 namespace cuda
 {
+/// The value of infinity
 constexpr f32 infinity = std::numeric_limits<f32>::infinity();
 
 } // namespace cuda

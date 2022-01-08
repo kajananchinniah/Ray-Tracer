@@ -1,3 +1,5 @@
+/// @file ray_utils.hpp
+//. @brief Contains useful functions for uworking with rays
 #ifndef RAY_TRACER_RAY_CUDA_RAY_UTILS_HPP_
 #define RAY_TRACER_RAY_CUDA_RAY_UTILS_HPP_
 
@@ -19,6 +21,8 @@ namespace RayTracer
 namespace cuda
 {
 
+// TODO: document this
+
 __device__ f32 hitSphere(const Point3f &center, f32 radius, const Ray &ray);
 
 __device__ Colour getRayColourBasic(const Ray &ray);
@@ -39,6 +43,14 @@ getRayColourWithMaterial(const Ray &ray, Sphere *sphere_array,
                          s64 max_depth, curandState &random_state);
 
 // TODO: we don't need this redirection
+/// @brief Gets the colour of a ray
+///
+/// @param ray The input ray
+/// @param sphere_array An array of spheres
+/// @param sphere_array_properties Describes the above array
+/// @param max_depth The max depth (e.g. number of ray bounces) to go through
+/// @param random_state The random state
+//. @return The colour of the ray
 __device__ Colour getRayColour(const Ray &ray, Sphere *sphere_array,
                                SphereArrayProperties sphere_array_properties,
                                s64 max_depth, curandState &random_state);
