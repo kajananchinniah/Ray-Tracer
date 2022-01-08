@@ -71,7 +71,7 @@ Implementation              | Time (s)
 ----------------------------|---------
 Mine (my machine)           | 7.93 s
 CUDA article (my machine)   | 10.3 s
-CPU (my machine)            | 550 s
+CPU (my machine)            | 550 s (~ 9 min)
 GTX 1070 (article machine)  | 6.7 s
 RTX 2080 (article machine)  | 4.7 s
 CPU (article machine)       | 90 s
