@@ -1,5 +1,3 @@
-option(BUILD_DOCUMENTATION "Generate doxygen documentation" ON)
-
 if(BUILD_DOCUMENTATION)
   find_package(Doxygen REQUIRED dot)
   set(DOXYGEN_GENERATE_HTML YES)

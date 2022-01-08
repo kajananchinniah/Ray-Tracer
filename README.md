@@ -20,7 +20,31 @@ didn't take long but visually is worse.
 ## Dependencies
 - CUDA + NVCC compiler
 - OpenCV (only for image I/O)
+- Doxygen (documentation)
 - Gtest (tests)
+
+## Building
+To compile:
+```
+mkdir build
+cd build
+cmake ..
+make
+```
+
+If you want to build the tests, use
+```
+cmake .. -DBUILD_TESTS=ON
+```
+To test, simply run ctest by typing `ctest`. If you want verbosity, run `ctest
+-V`.
+
+If you want to build the (incomplete) documentation, use
+```
+cmake .. -DBUILD_DOCUMENTATION=ON
+```
+
+This will generate a Doxyfile in the root of build, which you can then use doxygen (e.g. `doxygen Doxyfile.doxygen-docs`) to generate the documentation. This will be output in the `docs` folder.
 
 ## Tested on
 - CPU: Intel Core i5 (4 core, 7th gen)
@@ -80,6 +104,10 @@ CPU (article machine)       | 90 s
 - Changed to testing to ensure behavior of my images don't change with additions
   rather than testing against website due to randomness. I instead made sure
   they looked visually similar.
+
+## Note about the documentation
+I got too lazy, there's too much so I stopped. I also rushed what little
+documentation I have. I will document later.
 
 ## References
 - https://raytracing.github.io/books/RayTracingInOneWeekend.html

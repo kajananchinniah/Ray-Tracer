@@ -11,6 +11,9 @@ set(CMAKE_CUDA_STANDARD 17)
 
 set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -rdc=true")
 
+option(BUILD_DOCUMENTATION "Generate doxygen documentation" OFF)
+option(BUILD_TESTS "Build unit test (requires GTest)" OFF)
+
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Debug")
 endif()
@@ -21,6 +24,6 @@ include(CTest)
 
 add_subdirectory(src)
 
-if(BUILD_TESTING)
+if(BUILD_TESTS)
   add_subdirectory(tests)
 endif()
