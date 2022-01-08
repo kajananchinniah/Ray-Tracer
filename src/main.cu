@@ -133,9 +133,9 @@ int main()
         std::chrono::steady_clock::now();
 
     RayTracer::cuda::render(camera, world, samples_per_pixel, max_depth, image);
+    RayTracer::ImageUtils::saveImage("result.png", image);
     std::chrono::steady_clock::time_point end =
         std::chrono::steady_clock::now();
-    RayTracer::ImageUtils::saveImage("result.png", image);
     std::cout << "Time difference = "
               << std::chrono::duration_cast<std::chrono::microseconds>(end -
                                                                        begin)
